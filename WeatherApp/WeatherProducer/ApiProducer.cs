@@ -15,6 +15,7 @@ public class ApiProducer
     
     public async Task Produce(TimeSpan interval, CancellationToken cancellationToken)
     {
+        // Setup kafka producer
         var producerConfig = new ProducerConfig
         {
             BootstrapServers = config.Servers
@@ -26,13 +27,41 @@ public class ApiProducer
         while (!cancellationToken.IsCancellationRequested)
         {
             // Produce
-            Console.WriteLine("Crunching data...");
-            await producer.ProduceAsync(config.Topic, new Message<Null, string>
+            var response = await OpenMeteoClient.GetWeatherData();
+            if (response != null)
             {
-                Value = "Weather Data"
-            }, cancellationToken);
+                Console.WriteLine(response);
+                await producer.ProduceAsync(config.Topic, new Message<Null, string>
+                {
+                    Value = response
+                }, cancellationToken);
+            }
             try { await Task.Delay(interval, cancellationToken); }
             catch (TaskCanceledException) { }
+        }
+    }
+
+    private static class OpenMeteoClient
+    {
+        private static readonly HttpClient Client = new();
+
+        public static async Task<string?> GetWeatherData()
+        {
+            // Hardcoded Vienna Data
+            // https://open-meteo.com/en/docs#api-documentation
+            try
+            {
+                var response = await Client.GetAsync(
+                    "https://api.open-meteo.com/v1/forecast?latitude=48.21&longitude=16.37&current_weather=true"
+                );
+                response.EnsureSuccessStatusCode();
+                return await response.Content.ReadAsStringAsync();
+            }
+            catch (Exception ex)
+            {
+                await Console.Error.WriteLineAsync(ex.Message);
+                return null;
+            }
         }
     }
 }
