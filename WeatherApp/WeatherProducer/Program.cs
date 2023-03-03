@@ -1,5 +1,6 @@
 ﻿// See https://aka.ms/new-console-template for more information
 
+using System.Text;
 using Microsoft.Extensions.Configuration;
 using WeatherProducer.config;
 
@@ -9,19 +10,22 @@ public static class Program
 {
     public static void Main()
     {
+        Console.OutputEncoding = Encoding.UTF8;
+        Console.WriteLine("Weather Producer 🌤️");
+        
         var kafkaConfig = new ConfigurationBuilder()
             .AddJsonFile("config/kafka.json")
             .AddEnvironmentVariables()
             .Build()
             .Get<KafkaConfig>()!;
 
-        Console.WriteLine(kafkaConfig.Topic);
+        Console.WriteLine($"Using config: {kafkaConfig}");
 
         // Produce data
         var timeSpan = TimeSpan.FromSeconds(1);
         var tokenSource = new CancellationTokenSource();
         var token = tokenSource.Token;
-        var producer = new ApiProducer();
+        var producer = new ApiProducer(kafkaConfig);
         var task = Task.Run(() => producer.Produce(timeSpan, token), token);
 
         // Wait for ctr-c event
