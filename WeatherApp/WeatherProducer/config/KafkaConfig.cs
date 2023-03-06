@@ -2,8 +2,8 @@
 
 public class KafkaConfig
 {
-    public string Topic { get; set; } = default!;
-    public string Servers { get; set; } = default!;
+    public string Topic { get; set; } = null!;
+    public string Servers { get; set; } = null!;
 
     public override string ToString()
     {
