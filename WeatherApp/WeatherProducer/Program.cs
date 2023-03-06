@@ -19,7 +19,7 @@ var timeSpan = TimeSpan.FromSeconds(1);
 var tokenSource = new CancellationTokenSource();
 var token = tokenSource.Token;
 var producer = new ApiProducer(kafkaConfig);
-var task = Task.Run(() => producer.Produce(timeSpan, token), token);
+var task = producer.Produce(timeSpan, token);
 
 // Wait for ctr-c event
 // https://stackoverflow.com/a/13899429
