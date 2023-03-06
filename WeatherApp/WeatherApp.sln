@@ -1,6 +1,14 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WeatherProducer", "WeatherProducer\WeatherProducer.csproj", "{DD4257D4-2AAB-4AF3-BF2F-EDB1A5D580C6}"
+# Visual Studio Version 17
+VisualStudioVersion = 17.4.33213.308
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WeatherProducer", "WeatherProducer\WeatherProducer.csproj", "{DD4257D4-2AAB-4AF3-BF2F-EDB1A5D580C6}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DevOps", "DevOps", "{BAFB4B63-A661-42B9-BF02-843CE1A57BDD}"
+	ProjectSection(SolutionItems) = preProject
+		docker-compose.yml = docker-compose.yml
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -12,5 +20,11 @@ Global
 		{DD4257D4-2AAB-4AF3-BF2F-EDB1A5D580C6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DD4257D4-2AAB-4AF3-BF2F-EDB1A5D580C6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DD4257D4-2AAB-4AF3-BF2F-EDB1A5D580C6}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {4BD79264-ECB9-460E-85F2-71CB9E4F71CF}
 	EndGlobalSection
 EndGlobal
