@@ -5,20 +5,19 @@ namespace WeatherProducer;
 
 public class ApiProducer
 {
-    private readonly KafkaConfig config;
+    private readonly KafkaConfig _config;
 
     public ApiProducer(KafkaConfig config)
     {
-        this.config = config;
+        _config = config;
     }
-    
     
     public async Task Produce(TimeSpan interval, CancellationToken cancellationToken)
     {
         // Setup kafka producer
         var producerConfig = new ProducerConfig
         {
-            BootstrapServers = config.Servers
+            BootstrapServers = _config.Servers
         };
         using var producer = new ProducerBuilder<Null, string>(producerConfig).Build();
         
@@ -31,7 +30,7 @@ public class ApiProducer
             if (response != null)
             {
                 Console.WriteLine(response);
-                await producer.ProduceAsync(config.Topic, new Message<Null, string>
+                await producer.ProduceAsync(_config.Topic, new Message<Null, string>
                 {
                     Value = response
                 }, cancellationToken);
