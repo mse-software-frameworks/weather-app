@@ -23,16 +23,20 @@ public class ApiProducer
         
         // Async loop
         // https://stackoverflow.com/a/30462232
+        var currentPartition = 0;
         while (!cancellationToken.IsCancellationRequested)
         {
             // Produce
             var response = await OpenMeteoClient.GetWeatherData();
             if (response != null)
             {
+                var partitionId = currentPartition % _config.Partitions;
+                currentPartition++;
+                response = $"{{\"id\":{partitionId},\"data\":{response}}}";
                 Console.WriteLine(response);
                 // Write to specific partition
                 // https://stackoverflow.com/a/72466351
-                var topicPartition = new TopicPartition(_config.Topic, new Partition(0));
+                var topicPartition = new TopicPartition(_config.Topic, new Partition(partitionId));
                 await producer.ProduceAsync(topicPartition, new Message<Null, string>
                 {
                     Value = response

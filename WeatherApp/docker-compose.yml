@@ -1,29 +1,43 @@
 ﻿# Based on 
 # * https://developer.confluent.io/quickstart/kafka-docker/
 # * https://www.baeldung.com/ops/kafka-docker-setup
+# Fix Cluster ID Mismatch
+# * https://github.com/wurstmeister/kafka-docker/issues/559#issuecomment-607441768
+# * https://github.com/confluentinc/kafka-images/issues/127#issuecomment-1152703071
 version: '3'
 services:
   zookeeper-1:
     image: confluentinc/cp-zookeeper:7.3.0
-    container_name: zookeeper1
+    container_name: zookeeper-1
+    user: root
     environment:
+      ZOOKEEPER_SERVER_ID: 1
       ZOOKEEPER_CLIENT_PORT: 2181
       ZOOKEEPER_TICK_TIME: 2000
     ports:
       - "22181:2181"
+    volumes:
+      - ./volumes/zookeeper1/data:/var/lib/zookeeper/data
+      - ./volumes/zookeeper1/log:/var/lib/zookeeper/log
 
   zookeeper-2:
     image: confluentinc/cp-zookeeper:7.3.0
-    container_name: zookeeper2
+    container_name: zookeeper-2
+    user: root
     environment:
+      ZOOKEEPER_SERVER_ID: 2
       ZOOKEEPER_CLIENT_PORT: 2181
       ZOOKEEPER_TICK_TIME: 2000
     ports:
       - "32181:2181"
+    # volumes:
+    #  - ./volumes/zookeeper2/data:/var/lib/zookeeper/data
+    #  - ./volumes/zookeeper2/log:/var/lib/zookeeper/log
   
   broker-1:
     image: confluentinc/cp-kafka:7.3.0
-    container_name: broker1
+    user: root
+    container_name: broker-1
     depends_on:
       - zookeeper-1
       - zookeeper-2
@@ -37,9 +51,13 @@ services:
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
       KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+    # volumes:
+    #  - ./volumes/kafka1:/var/lib/kafka/data
+      
   broker-2:
     image: confluentinc/cp-kafka:7.3.0
-    container_name: broker2
+    user: root
+    container_name: broker-2
     depends_on:
       - zookeeper-1
       - zookeeper-2
@@ -52,9 +70,13 @@ services:
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
       KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+    # volumes:
+    #  - ./volumes/kafka2:/var/lib/kafka/data  
+      
   broker-3:
     image: confluentinc/cp-kafka:7.3.0
-    container_name: broker3
+    user: root
+    container_name: broker-3
     depends_on:
       - zookeeper-1
       - zookeeper-2
@@ -67,3 +89,5 @@ services:
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
       KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+    # volumes:
+    #  - ./volumes/kafka3:/var/lib/kafka/data
