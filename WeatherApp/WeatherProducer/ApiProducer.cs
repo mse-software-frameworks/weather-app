@@ -30,7 +30,10 @@ public class ApiProducer
             if (response != null)
             {
                 Console.WriteLine(response);
-                await producer.ProduceAsync(_config.Topic, new Message<Null, string>
+                // Write to specific partition
+                // https://stackoverflow.com/a/72466351
+                var topicPartition = new TopicPartition(_config.Topic, new Partition(0));
+                await producer.ProduceAsync(topicPartition, new Message<Null, string>
                 {
                     Value = response
                 }, cancellationToken);

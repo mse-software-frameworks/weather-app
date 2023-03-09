@@ -1,4 +1,4 @@
 ﻿{
   "topic": "weather",
-  "servers": "localhost:9092;"
+  "servers": "localhost:29092;"
 }

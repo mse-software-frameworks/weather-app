@@ -21,7 +21,7 @@ var token = tokenSource.Token;
 var producer = new ApiProducer(kafkaConfig);
 var task = producer.Produce(timeSpan, token);
 
-// Wait for ctr-c event
+// Wait for ctrl-c event
 // https://stackoverflow.com/a/13899429
 var exitEvent = new ManualResetEvent(false);
 Console.CancelKeyPress += (sender, eventArgs) =>

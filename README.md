@@ -11,8 +11,8 @@ docker-compose up
 Create topic
 
 ```bash
-docker exec --interactive --tty broker \
-kafka-console-producer --bootstrap-server broker:9092 \
+docker exec --interactive --tty broker1 \
+kafka-console-producer --bootstrap-server broker-1:9092 \
                        --topic weather
 ```
 
@@ -37,8 +37,8 @@ dotnet run
 Read messages via
 
 ```bash
-docker exec --interactive --tty broker \
-kafka-console-consumer --bootstrap-server broker:9092 \
+docker exec --interactive --tty broker1 \
+kafka-console-consumer --bootstrap-server broker-1:9092 \
                        --topic weather \
                        --from-beginning
 ```
