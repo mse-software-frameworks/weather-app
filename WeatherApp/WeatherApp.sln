@@ -10,6 +10,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DevOps", "DevOps", "{BAFB4B
 		docker-compose.yml = docker-compose.yml
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WeatherAggregator", "WeatherAggregator\WeatherAggregator.csproj", "{2E5B9BDE-BACD-4EE5-A845-09F9D91E0555}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -20,6 +22,10 @@ Global
 		{DD4257D4-2AAB-4AF3-BF2F-EDB1A5D580C6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DD4257D4-2AAB-4AF3-BF2F-EDB1A5D580C6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DD4257D4-2AAB-4AF3-BF2F-EDB1A5D580C6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2E5B9BDE-BACD-4EE5-A845-09F9D91E0555}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2E5B9BDE-BACD-4EE5-A845-09F9D91E0555}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2E5B9BDE-BACD-4EE5-A845-09F9D91E0555}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2E5B9BDE-BACD-4EE5-A845-09F9D91E0555}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

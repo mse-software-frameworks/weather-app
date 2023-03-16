@@ -19,7 +19,7 @@ public class ApiProducer
         {
             BootstrapServers = _config.Servers
         };
-        using var producer = new ProducerBuilder<Null, string>(producerConfig).Build();
+        using var producer = new ProducerBuilder<string, string>(producerConfig).Build();
         
         // Async loop
         // https://stackoverflow.com/a/30462232
@@ -32,13 +32,14 @@ public class ApiProducer
             {
                 var partitionId = currentPartition % _config.Partitions;
                 currentPartition++;
-                response = $"{{\"id\":{partitionId},\"data\":{response}}}";
+                //response = $"{{\"id\":{partitionId},\"data\":{response}}}";
                 Console.WriteLine(response);
                 // Write to specific partition
                 // https://stackoverflow.com/a/72466351
                 var topicPartition = new TopicPartition(_config.Topic, new Partition(partitionId));
-                await producer.ProduceAsync(topicPartition, new Message<Null, string>
+                await producer.ProduceAsync(topicPartition, new Message<string, string>
                 {
+                    Key = "Wien",
                     Value = response
                 }, cancellationToken);
             }

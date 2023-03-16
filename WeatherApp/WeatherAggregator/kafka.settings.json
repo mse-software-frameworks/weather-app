@@ -1,0 +1,6 @@
+﻿{
+  "topic": "weather",
+  "servers": "localhost:29092,localhost:39092,localhost:49092",
+  "partitions": 3,
+  "groupId": "group-1"
+}
