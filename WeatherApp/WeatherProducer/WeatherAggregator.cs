@@ -1,9 +1,7 @@
 ﻿using System.Globalization;
 using Streamiz.Kafka.Net;
-using Streamiz.Kafka.Net.Crosscutting;
 using Streamiz.Kafka.Net.SchemaRegistry.SerDes.Avro;
 using Streamiz.Kafka.Net.SerDes;
-using Streamiz.Kafka.Net.State;
 using Streamiz.Kafka.Net.Table;
 using WeatherProducer.AvroSpecific;
 using WeatherProducer.config;
@@ -33,7 +31,8 @@ public class WeatherAggregator
 
         // Weather temperature aggregation 
         // https://lgouellec.github.io/kafka-streams-dotnet/overview.html
-        // Stream -> Table -> Stream
+        // Stream (topic) -> Table (memory) -> Stream (topic)
+        // Library stores tables in memory or additional databases, not Kafka
         // https://lgouellec.github.io/kafka-streams-dotnet/stores.html
         streamBuilder
             .Stream<string, Weather>(_config.Topic)
@@ -42,8 +41,7 @@ public class WeatherAggregator
                 {
                     AverageTemperature(value, aggregator);
                     return aggregator;
-                }, Materialized<string, AverageWeather, IKeyValueStore<Bytes, byte[]>>.
-                    Create("aggregated-weather")
+                }, InMemory.As<string, AverageWeather>("aggregated-weather")
                     .WithKeySerdes<StringSerDes>()
                     .WithValueSerdes<SchemaAvroSerDes<AverageWeather>>()
             )
