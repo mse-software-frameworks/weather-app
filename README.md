@@ -1,6 +1,97 @@
 # weather-app 🌤️
 
-### Kafka Setup 
+### Exercise Kafka Streaming
+
+Run locally via docker
+
+```bash
+cd WeatherApp
+docker-compose down
+docker-compose up
+```
+
+Create topic
+
+```bash
+docker exec --interactive --tty broker-1 \
+kafka-topics --bootstrap-server broker-1:9092 \
+                       --create --topic weather \
+                       --partitions 3 \
+                       --replication-factor 3
+```
+
+#### Weather Producer & Aggregator
+
+Configure Kafka via config found under `WeatherApp/WeatherProducer/config/kafka.json`
+
+```json
+{
+  "topic": "weather", // Topic name
+  "aggregateTopic": "average-temperature", // Aggregate Topic name
+  "servers": "localhost:29092,localhost:39092,localhost:49092", // Initial list of brokers as a CSV list of broker host or host:port
+  "partitions": 3, // Number of partitions to write 
+  "schemaRegistry": "http://localhost:8085" // URL to schema registry
+}
+```
+
+Generate code from schema
+
+```bash
+cd WeatherApp/WeatherProducer/schema
+dotnet tool install --global Apache.Avro.Tools
+```
+
+```bash
+avrogen -s .\Weather.avsc  .  --namespace "weather.serialization.avro:WeatherProducer.AvroSpecific" --skip-directories 
+avrogen -s .\AverageWeather.avsc  .  --namespace "weather.serialization.avro:WeatherProducer.AvroSpecific" --skip-directories 
+```
+
+Run producer app
+
+```bash
+cd WeatherApp/WeatherProducer
+dotnet run
+```
+
+Check if schemata were registered
+
+```bash
+curl localhost:8085/subjects
+# "weather-value"
+```
+
+Query schema compatibility mode
+
+```bash
+curl localhost:8085/config
+# {"compatibilityLevel":"BACKWARD"}
+```
+
+Read weather data
+
+> Id/Partition 0 => Vienna     
+> Id/Partition 1 => London      
+> Id/Partition 2 => Berlin
+
+```bash
+docker exec --interactive --tty schemaregistry \
+kafka-avro-console-consumer --bootstrap-server broker-1:9092 \
+                       --topic weather \
+                       --property schema.registry.url=http://localhost:8085 
+```
+
+Read aggregated stream (average temperature per city)
+
+```bash
+docker exec --interactive --tty broker-1 \
+kafka-console-consumer --bootstrap-server broker-1:9092 \
+                       --topic average-temperature \
+                       --property print.key=true
+```
+
+
+
+### Exercise Kafka Setup 
 
 Run locally via docker
 
@@ -28,7 +119,7 @@ kafka-topics --bootstrap-server broker-1:9092 \
                        --delete --topic weather
 ```
 
-### Weather Producer
+#### Weather Producer
 
 Configure Kafka via config found under `WeatherApp/WeatherProducer/config/kafka.json`
 
@@ -73,7 +164,7 @@ kafka-console-consumer --bootstrap-server broker-1:9092 \
                        --partition 1
 ```
 
-### Questions
+#### Questions
 
 Analyze how the following things are related
 
@@ -126,7 +217,7 @@ Restarting a down broker should restore functionality
 docker compose start broker-2
 ```
 
-At the end, one can also remove the `min.insync.replicas` constraint again
+At the end, one can also remove the `min.insync.replicas` constraint again
 
 ```bash
 docker exec --interactive --tty broker-1 \

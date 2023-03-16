@@ -1,0 +1,69 @@
+﻿{
+  "namespace": "weather.serialization.avro",
+  "name": "Weather",
+  "type": "record",
+  "fields": [
+    {
+      "name": "id",
+      "type": "string"
+    },
+    {
+      "name": "latitude",
+      "type": "double"
+    },
+    {
+      "name": "longitude",
+      "type": "double"
+    },
+    {
+      "name": "generationtime_ms",
+      "type": "double"
+    },
+    {
+      "name": "utc_offset_seconds",
+      "type": "double"
+    },
+    {
+      "name": "timezone",
+      "type": "string"
+    },
+    {
+      "name": "timezone_abbreviation",
+      "type": "string",
+    },
+    {
+      "name": "elevation",
+      "type": "double"
+    },
+    {
+      "name": "current_weather",
+      "type": {
+        "namespace": "weather.serialization.avro",
+        "name": "CurrentWeather",
+        "type": "record",
+        "fields": [
+          {
+            "name": "temperature",
+            "type": "double"
+          },
+          {
+            "name": "windspeed",
+            "type": "double"
+          },
+          {
+            "name": "winddirection",
+            "type": "double"
+          },
+          {
+            "name": "weathercode",
+            "type": "int"
+          },
+          {
+            "name": "time",
+            "type": "string"
+          }
+        ]
+      }
+    }
+  ]
+}
