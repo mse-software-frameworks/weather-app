@@ -1,0 +1,19 @@
+﻿{
+  "namespace": "weather.serialization.avro",
+  "name": "AverageWeather",
+  "type": "record",
+  "fields": [
+    {
+      "name": "average_temperature",
+      "type": "double"
+    },
+    {
+      "name": "temperature_measurements",
+      "type": {
+        "type": "array",
+        "items": "double",
+        "default": []
+      }
+    }
+  ]
+}

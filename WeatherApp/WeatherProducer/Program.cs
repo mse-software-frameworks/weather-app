@@ -18,8 +18,11 @@ Console.WriteLine($"Using config: {kafkaConfig}");
 var timeSpan = TimeSpan.FromSeconds(1);
 var tokenSource = new CancellationTokenSource();
 var token = tokenSource.Token;
-var producer = new ApiProducer(kafkaConfig);
-var task = producer.Produce(timeSpan, token);
+var tasks = new List<Task>();
+var apiProducer = new ApiProducer(kafkaConfig);
+tasks.Add(apiProducer.Produce(timeSpan, token));
+var weatherAggregator = new WeatherAggregator(kafkaConfig);
+tasks.Add(weatherAggregator.Produce(token));
 
 // Wait for ctrl-c event
 // https://stackoverflow.com/a/13899429
@@ -34,7 +37,12 @@ exitEvent.WaitOne();
 // Cancel producer via token
 Console.WriteLine("Initiating shutdown...");
 tokenSource.Cancel();
-task.Wait(token);
+try
+{
+    Task.WaitAll(tasks.ToArray(), token);
+}
+catch (Exception ex) {}
+
 tokenSource.Dispose();
 
 Console.WriteLine("Shutdown complete");

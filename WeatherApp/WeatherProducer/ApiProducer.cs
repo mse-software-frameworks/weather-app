@@ -1,4 +1,8 @@
-﻿using Confluent.Kafka;
+﻿using System.Text.Json;
+using Confluent.Kafka;
+using Confluent.SchemaRegistry;
+using Confluent.SchemaRegistry.Serdes;
+using WeatherProducer.AvroSpecific;
 using WeatherProducer.config;
 
 namespace WeatherProducer;
@@ -19,7 +23,22 @@ public class ApiProducer
         {
             BootstrapServers = _config.Servers
         };
-        using var producer = new ProducerBuilder<Null, string>(producerConfig).Build();
+
+        var schemaRegistryConfig = new SchemaRegistryConfig
+        {
+            Url = _config.SchemaRegistry
+        };
+        using var schemaRegistry = new CachedSchemaRegistryClient(schemaRegistryConfig);
+        
+        var avroSerializerConfig = new AvroSerializerConfig
+        {
+            // optional Avro serializer properties:
+            BufferBytes = 100
+        };
+        using var producer = 
+            new ProducerBuilder<string, Weather>(producerConfig)
+                .SetValueSerializer(new AvroSerializer<Weather>(schemaRegistry, avroSerializerConfig))
+                .Build();
         
         // Async loop
         // https://stackoverflow.com/a/30462232
@@ -27,38 +46,61 @@ public class ApiProducer
         while (!cancellationToken.IsCancellationRequested)
         {
             // Produce
-            var response = await OpenMeteoClient.GetWeatherData();
+            var partitionId = currentPartition % _config.Partitions;
+            var response = await OpenMeteoClient.GetWeatherData(partitionId);
             if (response != null)
             {
-                var partitionId = currentPartition % _config.Partitions;
                 currentPartition++;
-                response = $"{{\"id\":{partitionId},\"data\":{response}}}";
+                // Add partition id to response
+                response = $"{{\"id\":\"{partitionId}\"," + response[1..];
                 Console.WriteLine(response);
+                
                 // Write to specific partition
                 // https://stackoverflow.com/a/72466351
                 var topicPartition = new TopicPartition(_config.Topic, new Partition(partitionId));
-                await producer.ProduceAsync(topicPartition, new Message<Null, string>
+
+                var weatherData = JsonSerializer.Deserialize<Weather>(response);
+                if (weatherData != null)
                 {
-                    Value = response
-                }, cancellationToken);
+                    await producer.ProduceAsync(topicPartition, new Message<string, Weather>
+                    {
+                        Key = partitionId.ToString(),
+                        Value = weatherData
+                    }, cancellationToken);
+                }
             }
             try { await Task.Delay(interval, cancellationToken); }
             catch (TaskCanceledException) { }
         }
     }
+    
+    
 
     private static class OpenMeteoClient
     {
         private static readonly HttpClient Client = new();
 
-        public static async Task<string?> GetWeatherData()
+        private static readonly Dictionary<string, Tuple<string, string>> Cities = new()
+        {
+            { "Vienna", new Tuple<string, string>("48.21", "16.37") },
+            { "London", new Tuple<string, string>("51.51", "-0.13") },
+            { "Berlin", new Tuple<string, string>("52.52", "13.41") },
+        };
+
+        public static async Task<string?> GetWeatherData(int currentPartition)
+        {
+            var coordinates = Cities.Values.ElementAt(currentPartition);
+            return await GetWeatherData(coordinates.Item1, coordinates.Item2);
+        }
+
+        public static async Task<string?> GetWeatherData(string latitude, string longitude)
         {
             // Hardcoded Vienna Data
             // https://open-meteo.com/en/docs#api-documentation
             try
             {
                 var response = await Client.GetAsync(
-                    "https://api.open-meteo.com/v1/forecast?latitude=48.21&longitude=16.37&current_weather=true"
+                    $"https://api.open-meteo.com/v1/forecast?latitude={latitude}&longitude={longitude}&current_weather=true"
                 );
                 response.EnsureSuccessStatusCode();
                 return await response.Content.ReadAsStringAsync();
