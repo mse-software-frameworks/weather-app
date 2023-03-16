@@ -21,8 +21,8 @@ var token = tokenSource.Token;
 var tasks = new List<Task>();
 var apiProducer = new ApiProducer(kafkaConfig);
 tasks.Add(apiProducer.Produce(timeSpan, token));
-var streamProducer = new StreamProducer(kafkaConfig);
-tasks.Add(streamProducer.Produce(token));
+var weatherAggregator = new WeatherAggregator(kafkaConfig);
+tasks.Add(weatherAggregator.Produce(token));
 
 // Wait for ctrl-c event
 // https://stackoverflow.com/a/13899429
@@ -41,7 +41,7 @@ try
 {
     Task.WaitAll(tasks.ToArray(), token);
 }
-catch (TaskCanceledException ex) {}
+catch (Exception ex) {}
 
 tokenSource.Dispose();
 

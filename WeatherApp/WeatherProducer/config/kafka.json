@@ -1,6 +1,7 @@
 ﻿{
   "topic": "weather",
   "aggregateTopic": "average-temperature",
+  "aggregateTable": "average-temperature",
   "servers": "localhost:29092,localhost:39092,localhost:49092",
   "partitions": 3,
   "schemaRegistry": "http://localhost:8085" 

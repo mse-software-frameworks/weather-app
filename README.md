@@ -1,6 +1,6 @@
 # weather-app 🌤️
 
-### Exercise Kafka Streaming
+### Exercise Streaming
 
 Run locally via docker
 
@@ -88,6 +88,24 @@ kafka-console-consumer --bootstrap-server broker-1:9092 \
                        --topic average-temperature \
                        --property print.key=true
 ```
+
+#### Questions
+
+How is the schema validated based on your selected compatibility mode.
+
+Our setup uses the default `Backward` compatibility mode.
+
+From the [Confluent docs](https://docs.confluent.io/platform/current/schema-registry/avro.html#compatibility-types):
+
+* Changes allowed:
+  * Delete fields
+  * Add optional fields
+* Checked against the last schema version
+* Upgrade first: Consumers
+
+This is further described in the [Backward Compatibility section](https://docs.confluent.io/platform/current/schema-registry/avro.html#backward-compatibility):
+
+*`BACKWARD` compatibility means that consumers using the new schema can read data produced with the last schema. For example, if there are three schemas for a subject that change in order X-2, X-1, and X then `BACKWARD` compatibility ensures that consumers using the new schema X can process data written by producers using schema X or X-1, but not necessarily X-2. If the consumer using the new schema needs to be able to process data  written by all registered schemas, not just the last two schemas, then  use `BACKWARD_TRANSITIVE` instead of `BACKWARD`. For example, if there are three schemas for a subject that change in order X-2, X-1, and X then `BACKWARD_TRANSITIVE` compatibility ensures that consumers using the new schema X can process data written by producers using schema X, X-1, or X-2.*
 
 
 
