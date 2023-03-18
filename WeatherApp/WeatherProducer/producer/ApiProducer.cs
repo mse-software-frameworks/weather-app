@@ -55,7 +55,7 @@ public class ApiProducer
             {
                 currentPartition++;
                 // Add partition id & city name to response
-                response = $"{{\"id\":\"{partitionId}\"," + response[1..];
+                response = $"{{\"id\":\"{partitionId}\",\"city\":\"{city.Key}\"," + response[1..];
                 Console.WriteLine(response);
                 
                 // Write to specific partition

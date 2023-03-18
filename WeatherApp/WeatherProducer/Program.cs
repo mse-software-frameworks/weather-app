@@ -1,6 +1,6 @@
 ﻿using System.Text;
 using Microsoft.Extensions.Configuration;
-using WeatherProducer;
+using WeatherProducer.aggregator;
 using WeatherProducer.config;
 using WeatherProducer.producer;
 
@@ -43,8 +43,8 @@ var token = tokenSource.Token;
 var tasks = new List<Task>();
 var apiProducer = new ApiProducer(kafkaConfig, citiesConfig);
 tasks.Add(apiProducer.Produce(timeSpan, token));
-// var weatherAggregator = new WeatherAggregator(kafkaConfig);
-// tasks.Add(weatherAggregator.Produce(token));
+var weatherAggregator = new WeatherAggregator(kafkaConfig);
+tasks.Add(weatherAggregator.Produce(token));
 
 // Wait for ctrl-c event
 // https://stackoverflow.com/a/13899429
@@ -63,7 +63,10 @@ try
 {
     Task.WaitAll(tasks.ToArray());
 }
-catch (Exception ex) {}
+catch (Exception ex)
+{
+    Console.Error.WriteLine(ex.Message);
+}
 
 tokenSource.Dispose();
 

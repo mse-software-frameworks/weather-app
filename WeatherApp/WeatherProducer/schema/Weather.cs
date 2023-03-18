@@ -16,8 +16,9 @@ namespace WeatherProducer.AvroSpecific
 	[global::System.CodeDom.Compiler.GeneratedCodeAttribute("avrogen", "1.11.1")]
 	public partial class Weather : global::Avro.Specific.ISpecificRecord
 	{
-		public static global::Avro.Schema _SCHEMA = global::Avro.Schema.Parse(@"{""type"":""record"",""name"":""Weather"",""namespace"":""WeatherProducer.AvroSpecific"",""fields"":[{""name"":""id"",""type"":""string""},{""name"":""latitude"",""type"":""double""},{""name"":""longitude"",""type"":""double""},{""name"":""generationtime_ms"",""type"":""double""},{""name"":""utc_offset_seconds"",""type"":""double""},{""name"":""timezone"",""type"":""string""},{""name"":""timezone_abbreviation"",""type"":""string""},{""name"":""elevation"",""type"":""double""},{""name"":""current_weather"",""type"":{""type"":""record"",""name"":""CurrentWeather"",""namespace"":""WeatherProducer.AvroSpecific"",""fields"":[{""name"":""temperature"",""type"":""double""},{""name"":""windspeed"",""type"":""double""},{""name"":""winddirection"",""type"":""double""},{""name"":""weathercode"",""type"":""int""},{""name"":""time"",""type"":""string""}]}}]}");
+		public static global::Avro.Schema _SCHEMA = global::Avro.Schema.Parse(@"{""type"":""record"",""name"":""Weather"",""namespace"":""WeatherProducer.AvroSpecific"",""fields"":[{""name"":""id"",""type"":""string""},{""name"":""city"",""type"":""string""},{""name"":""latitude"",""type"":""double""},{""name"":""longitude"",""type"":""double""},{""name"":""generationtime_ms"",""type"":""double""},{""name"":""utc_offset_seconds"",""type"":""double""},{""name"":""timezone"",""type"":""string""},{""name"":""timezone_abbreviation"",""type"":""string""},{""name"":""elevation"",""type"":""double""},{""name"":""current_weather"",""type"":{""type"":""record"",""name"":""CurrentWeather"",""namespace"":""WeatherProducer.AvroSpecific"",""fields"":[{""name"":""temperature"",""type"":""double""},{""name"":""windspeed"",""type"":""double""},{""name"":""winddirection"",""type"":""double""},{""name"":""weathercode"",""type"":""int""},{""name"":""time"",""type"":""string""}]}}]}");
 		private string _id;
+		private string _city;
 		private double _latitude;
 		private double _longitude;
 		private double _generationtime_ms;
@@ -42,6 +43,17 @@ namespace WeatherProducer.AvroSpecific
 			set
 			{
 				this._id = value;
+			}
+		}
+		public string city
+		{
+			get
+			{
+				return this._city;
+			}
+			set
+			{
+				this._city = value;
 			}
 		}
 		public double latitude
@@ -137,14 +149,15 @@ namespace WeatherProducer.AvroSpecific
 			switch (fieldPos)
 			{
 			case 0: return this.id;
-			case 1: return this.latitude;
-			case 2: return this.longitude;
-			case 3: return this.generationtime_ms;
-			case 4: return this.utc_offset_seconds;
-			case 5: return this.timezone;
-			case 6: return this.timezone_abbreviation;
-			case 7: return this.elevation;
-			case 8: return this.current_weather;
+			case 1: return this.city;
+			case 2: return this.latitude;
+			case 3: return this.longitude;
+			case 4: return this.generationtime_ms;
+			case 5: return this.utc_offset_seconds;
+			case 6: return this.timezone;
+			case 7: return this.timezone_abbreviation;
+			case 8: return this.elevation;
+			case 9: return this.current_weather;
 			default: throw new global::Avro.AvroRuntimeException("Bad index " + fieldPos + " in Get()");
 			};
 		}
@@ -153,14 +166,15 @@ namespace WeatherProducer.AvroSpecific
 			switch (fieldPos)
 			{
 			case 0: this.id = (System.String)fieldValue; break;
-			case 1: this.latitude = (System.Double)fieldValue; break;
-			case 2: this.longitude = (System.Double)fieldValue; break;
-			case 3: this.generationtime_ms = (System.Double)fieldValue; break;
-			case 4: this.utc_offset_seconds = (System.Double)fieldValue; break;
-			case 5: this.timezone = (System.String)fieldValue; break;
-			case 6: this.timezone_abbreviation = (System.String)fieldValue; break;
-			case 7: this.elevation = (System.Double)fieldValue; break;
-			case 8: this.current_weather = (WeatherProducer.AvroSpecific.CurrentWeather)fieldValue; break;
+			case 1: this.city = (System.String)fieldValue; break;
+			case 2: this.latitude = (System.Double)fieldValue; break;
+			case 3: this.longitude = (System.Double)fieldValue; break;
+			case 4: this.generationtime_ms = (System.Double)fieldValue; break;
+			case 5: this.utc_offset_seconds = (System.Double)fieldValue; break;
+			case 6: this.timezone = (System.String)fieldValue; break;
+			case 7: this.timezone_abbreviation = (System.String)fieldValue; break;
+			case 8: this.elevation = (System.Double)fieldValue; break;
+			case 9: this.current_weather = (WeatherProducer.AvroSpecific.CurrentWeather)fieldValue; break;
 			default: throw new global::Avro.AvroRuntimeException("Bad index " + fieldPos + " in Put()");
 			};
 		}
