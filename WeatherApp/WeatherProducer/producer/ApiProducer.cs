@@ -5,7 +5,7 @@ using Confluent.SchemaRegistry.Serdes;
 using WeatherProducer.AvroSpecific;
 using WeatherProducer.config;
 
-namespace WeatherProducer;
+namespace WeatherProducer.producer;
 
 public class ApiProducer
 {
@@ -46,7 +46,8 @@ public class ApiProducer
         while (!cancellationToken.IsCancellationRequested)
         {
             // Produce
-            var partitionId = currentPartition % _config.Partitions;
+            // var partitionId = currentPartition % _config.Partitions;
+            var partitionId = 0;
             var response = await OpenMeteoClient.GetWeatherData(partitionId);
             if (response != null)
             {
@@ -57,7 +58,7 @@ public class ApiProducer
                 
                 // Write to specific partition
                 // https://stackoverflow.com/a/72466351
-                var topicPartition = new TopicPartition(_config.Topic, new Partition(partitionId));
+                var topicPartition = new TopicPartition(_config.WeatherTopic, new Partition(partitionId));
 
                 var weatherData = JsonSerializer.Deserialize<Weather>(response);
                 if (weatherData != null)

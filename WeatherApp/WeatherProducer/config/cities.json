@@ -1,0 +1,11 @@
+﻿{
+  "cities": [
+    {
+      "partition": 0,
+      "key": "Vienna",
+      "latitude": "48.21",
+      "longitude": "16.37"
+    }
+  ]
+}
+  

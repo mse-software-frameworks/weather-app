@@ -35,7 +35,7 @@ public class WeatherAggregator
         // Library stores tables in memory or additional databases, not Kafka
         // https://lgouellec.github.io/kafka-streams-dotnet/stores.html
         streamBuilder
-            .Stream<string, Weather>(_config.Topic)
+            .Stream<string, Weather>(_config.WeatherTopic)
             .GroupBy((k, v) => k)
             .Aggregate(Aggregator, (key, value, aggregator) =>
                 {
@@ -49,7 +49,7 @@ public class WeatherAggregator
                 v.average_temperature.ToString(CultureInfo.InvariantCulture)
             )
             .ToStream()
-            .To<StringSerDes, StringSerDes>(_config.AggregateTopic);
+            .To<StringSerDes, StringSerDes>(_config.AverageWeatherTable);
 
 
         var topology = streamBuilder.Build();

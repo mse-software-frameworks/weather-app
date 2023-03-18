@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Configuration;
 using WeatherProducer;
 using WeatherProducer.config;
+using WeatherProducer.producer;
 
 Console.OutputEncoding = Encoding.UTF8;
 Console.WriteLine("Weather Producer 🌤️");
@@ -14,7 +15,15 @@ var kafkaConfig = new ConfigurationBuilder()
 
 Console.WriteLine($"Using config: {kafkaConfig}");
 
-// Produce data
+var citiesConfig = new ConfigurationBuilder()
+    .AddJsonFile("config/cities.json")
+    .AddEnvironmentVariables()
+    .Build()
+    .Get<CitiesConfig>();
+
+Console.WriteLine($"Set cities to track: {citiesConfig}");
+
+/*// Produce data
 var timeSpan = TimeSpan.FromSeconds(1);
 var tokenSource = new CancellationTokenSource();
 var token = tokenSource.Token;
@@ -45,4 +54,4 @@ catch (Exception ex) {}
 
 tokenSource.Dispose();
 
-Console.WriteLine("Shutdown complete");
+Console.WriteLine("Shutdown complete");*/
