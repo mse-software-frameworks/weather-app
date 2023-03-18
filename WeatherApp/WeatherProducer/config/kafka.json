@@ -1,7 +1,10 @@
 ﻿{
-  "topic": "weather",
-  "aggregateTopic": "average-temperature",
   "servers": "localhost:29092,localhost:39092,localhost:49092",
-  "partitions": 3,
-  "schemaRegistry": "http://localhost:8085" 
+  "schemaRegistry": "http://localhost:8085",
+  "weatherTopic": "weather",
+  "averageWeatherTable": "average-weather",
+  "averageTemperatureTopic": "average-temperature",
+  "averageWindspeedTopic": "average-windspeed",
+  "averageWindchillTopic": "average-windchill",
+  "replications": 3
 }

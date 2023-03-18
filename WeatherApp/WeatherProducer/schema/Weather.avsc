@@ -8,6 +8,10 @@
       "type": "string"
     },
     {
+      "name": "city",
+      "type": "string"
+    },
+    {
       "name": "latitude",
       "type": "double"
     },

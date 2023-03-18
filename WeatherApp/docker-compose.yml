@@ -9,34 +9,26 @@ services:
   zookeeper-1:
     image: confluentinc/cp-zookeeper:7.3.0
     container_name: zookeeper-1
-    user: root
     environment:
       ZOOKEEPER_SERVER_ID: 1
       ZOOKEEPER_CLIENT_PORT: 2181
       ZOOKEEPER_TICK_TIME: 2000
     ports:
       - "22181:2181"
-#    volumes:
-#      - ./volumes/zookeeper1/data:/var/lib/zookeeper/data
-#      - ./volumes/zookeeper1/log:/var/lib/zookeeper/log
 
   zookeeper-2:
     image: confluentinc/cp-zookeeper:7.3.0
     container_name: zookeeper-2
-    user: root
     environment:
       ZOOKEEPER_SERVER_ID: 2
       ZOOKEEPER_CLIENT_PORT: 2181
       ZOOKEEPER_TICK_TIME: 2000
     ports:
       - "32181:2181"
-#    volumes:
-#      - ./volumes/zookeeper2/data:/var/lib/zookeeper/data
-#      - ./volumes/zookeeper2/log:/var/lib/zookeeper/log
   
   broker-1:
     image: confluentinc/cp-kafka:7.3.0
-    user: root
+
     container_name: broker-1
     depends_on:
       - zookeeper-1
@@ -52,12 +44,12 @@ services:
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
       KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
-#    volumes:
-#      - ./volumes/kafka1:/var/lib/kafka/data
+      KAFKA_DELETE_TOPIC_ENABLE: "true"
+      KAFKA_JMX_PORT: 9997
+      KAFKA_JMX_OPTS: -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Djava.rmi.server.hostname=kafka0 -Dcom.sun.management.jmxremote.rmi.port=9997
       
   broker-2:
     image: confluentinc/cp-kafka:7.3.0
-    user: root
     container_name: broker-2
     depends_on:
       - zookeeper-1
@@ -72,12 +64,12 @@ services:
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
       KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
-#    volumes:
-#      - ./volumes/kafka2:/var/lib/kafka/data  
+      KAFKA_DELETE_TOPIC_ENABLE: "true"
+      KAFKA_JMX_PORT: 9997
+      KAFKA_JMX_OPTS: -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Djava.rmi.server.hostname=kafka0 -Dcom.sun.management.jmxremote.rmi.port=9997
       
   broker-3:
     image: confluentinc/cp-kafka:7.3.0
-    user: root
     container_name: broker-3
     depends_on:
       - zookeeper-1
@@ -92,12 +84,12 @@ services:
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
       KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
-#    volumes:
-#      - ./volumes/kafka3:/var/lib/kafka/data
-
+      KAFKA_DELETE_TOPIC_ENABLE: "true"
+      KAFKA_JMX_PORT: 9997
+      KAFKA_JMX_OPTS: -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Djava.rmi.server.hostname=kafka0 -Dcom.sun.management.jmxremote.rmi.port=9997 
+  
   schemaregistry:
     image: confluentinc/cp-schema-registry:7.3.0
-    user: root
     container_name: schemaregistry
     restart: on-failure
     depends_on:
@@ -109,3 +101,27 @@ services:
       SCHEMA_REGISTRY_LISTENERS: "http://0.0.0.0:8085"
     ports:
       - "8085:8085"  
+        
+  # https://github.com/provectus/kafka-ui/blob/master/documentation/compose/kafka-ui.yaml
+  kafka-ui:
+    image: provectuslabs/kafka-ui:latest
+    container_name: kafka-ui
+    depends_on:
+      - schemaregistry
+    environment:
+      KAFKA_CLUSTERS_0_NAME: broker-1
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: broker-1:9092
+      KAFKA_CLUSTERS_0_METRICS_PORT: 9997
+      KAFKA_CLUSTERS_0_SCHEMAREGISTRY: http://schemaregistry:8085
+      KAFKA_CLUSTERS_1_NAME: broker-2
+      KAFKA_CLUSTERS_1_BOOTSTRAPSERVERS: broker-2:9092
+      KAFKA_CLUSTERS_1_METRICS_PORT: 9997
+      KAFKA_CLUSTERS_1_SCHEMAREGISTRY: http://schemaregistry:8085
+      KAFKA_CLUSTERS_2_NAME: broker-3
+      KAFKA_CLUSTERS_2_BOOTSTRAPSERVERS: broker-3:9092
+      KAFKA_CLUSTERS_2_METRICS_PORT: 9997
+      KAFKA_CLUSTERS_2_SCHEMAREGISTRY: http://schemaregistry:8085
+      DYNAMIC_CONFIG_ENABLED: 'true'
+    ports:
+      - "8080:8080"
+    

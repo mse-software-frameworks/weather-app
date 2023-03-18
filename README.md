@@ -2,6 +2,30 @@
 
 ### Exercise Streaming
 
+
+
+
+
+# TODO Update docs
+
+![image-20230318225255760](.img/image-20230318225255760.png)
+
+![image-20230318225327756](.img/image-20230318225327756.png)
+
+![image-20230318225635182](.img/image-20230318225635182.png)
+
+![image-20230318225718136](.img/image-20230318225718136.png)
+
+![image-20230318225736775](.img/image-20230318225736775.png)
+
+
+
+![image-20230318225830965](.img/image-20230318225830965.png)
+
+
+
+
+
 Run locally via docker
 
 ```bash
@@ -93,7 +117,7 @@ kafka-console-consumer --bootstrap-server broker-1:9092 \
 
 How is the schema validated based on your selected compatibility mode.
 
-Our setup uses the default `Backward` compatibility mode.
+Our setup uses the default `Backward` compatibility mode.
 
 From the [Confluent docs](https://docs.confluent.io/platform/current/schema-registry/avro.html#compatibility-types):
 

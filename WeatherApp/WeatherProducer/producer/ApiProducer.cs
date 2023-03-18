@@ -5,15 +5,17 @@ using Confluent.SchemaRegistry.Serdes;
 using WeatherProducer.AvroSpecific;
 using WeatherProducer.config;
 
-namespace WeatherProducer;
+namespace WeatherProducer.producer;
 
 public class ApiProducer
 {
     private readonly KafkaConfig _config;
+    private readonly IList<CitiesConfig.CityConfig> _cities;
 
-    public ApiProducer(KafkaConfig config)
+    public ApiProducer(KafkaConfig config, CitiesConfig cities)
     {
         _config = config;
+        _cities = cities.cities;
     }
     
     public async Task Produce(TimeSpan interval, CancellationToken cancellationToken)
@@ -46,25 +48,26 @@ public class ApiProducer
         while (!cancellationToken.IsCancellationRequested)
         {
             // Produce
-            var partitionId = currentPartition % _config.Partitions;
-            var response = await OpenMeteoClient.GetWeatherData(partitionId);
+            var partitionId = currentPartition % _cities.Count;
+            var city = _cities[partitionId];
+            var response = await OpenMeteoClient.GetWeatherData(city.Latitude, city.Longitude);
             if (response != null)
             {
                 currentPartition++;
-                // Add partition id to response
-                response = $"{{\"id\":\"{partitionId}\"," + response[1..];
+                // Add partition id & city name to response
+                response = $"{{\"id\":\"{partitionId}\",\"city\":\"{city.Key}\"," + response[1..];
                 Console.WriteLine(response);
                 
                 // Write to specific partition
                 // https://stackoverflow.com/a/72466351
-                var topicPartition = new TopicPartition(_config.Topic, new Partition(partitionId));
+                var topicPartition = new TopicPartition(_config.WeatherTopic, new Partition(partitionId));
 
                 var weatherData = JsonSerializer.Deserialize<Weather>(response);
                 if (weatherData != null)
                 {
                     await producer.ProduceAsync(topicPartition, new Message<string, Weather>
                     {
-                        Key = partitionId.ToString(),
+                        Key = city.Key,
                         Value = weatherData
                     }, cancellationToken);
                 }
@@ -75,23 +78,9 @@ public class ApiProducer
     }
     
     
-
     private static class OpenMeteoClient
     {
         private static readonly HttpClient Client = new();
-
-        private static readonly Dictionary<string, Tuple<string, string>> Cities = new()
-        {
-            { "Vienna", new Tuple<string, string>("48.21", "16.37") },
-            { "London", new Tuple<string, string>("51.51", "-0.13") },
-            { "Berlin", new Tuple<string, string>("52.52", "13.41") },
-        };
-
-        public static async Task<string?> GetWeatherData(int currentPartition)
-        {
-            var coordinates = Cities.Values.ElementAt(currentPartition);
-            return await GetWeatherData(coordinates.Item1, coordinates.Item2);
-        }
 
         public static async Task<string?> GetWeatherData(string latitude, string longitude)
         {
