@@ -8,7 +8,7 @@ public class KafkaConfig
     public string AverageWeatherTable { get; set; } = null!;
     public string AverageTemperatureTopic { get; set; } = null!;
     public string AverageWindchillTopic { get; set; } = null!;
-    public int Replications { get; set; }
+    public short Replications { get; set; }
     
     public override string ToString()
     {
@@ -16,5 +16,10 @@ public class KafkaConfig
                $"WeatherTopic={WeatherTopic}, AverageWeatherTable={AverageWeatherTable}, " +
                $"AverageTemperatureTopic={AverageTemperatureTopic}, AverageWindchillTopic={AverageWindchillTopic}, " +
                $"Replications={Replications}}}";
+    }
+
+    public string[] Topics()
+    {
+        return new[] { WeatherTopic, AverageWeatherTable, AverageTemperatureTopic, AverageWindchillTopic };
     }
 }

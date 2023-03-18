@@ -52,7 +52,8 @@ services:
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
       KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
-#    volumes:
+      KAFKA_DELETE_TOPIC_ENABLE: "true"
+      #    volumes:
 #      - ./volumes/kafka1:/var/lib/kafka/data
       
   broker-2:
@@ -72,7 +73,8 @@ services:
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
       KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
-#    volumes:
+      KAFKA_DELETE_TOPIC_ENABLE: "true"
+      #    volumes:
 #      - ./volumes/kafka2:/var/lib/kafka/data  
       
   broker-3:
@@ -92,7 +94,8 @@ services:
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
       KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
-#    volumes:
+      KAFKA_DELETE_TOPIC_ENABLE: "true"
+  #    volumes:
 #      - ./volumes/kafka3:/var/lib/kafka/data
 
   schemaregistry:

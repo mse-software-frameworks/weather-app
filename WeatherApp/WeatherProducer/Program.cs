@@ -23,6 +23,21 @@ var citiesConfig = new ConfigurationBuilder()
 
 Console.WriteLine($"Set cities to track: {citiesConfig}");
 
+var topicCreator = new TopicCreator(kafkaConfig, citiesConfig);
+try
+{
+    await topicCreator.Create();
+}
+catch (Exception ex)
+{
+    // DeleteTopicsException, CreateTopicsException & and so on
+    Console.Error.WriteLine($"An error occured managing topics: {ex.Message})");
+    return;
+}
+
+var kek = "";
+
+
 /*// Produce data
 var timeSpan = TimeSpan.FromSeconds(1);
 var tokenSource = new CancellationTokenSource();
