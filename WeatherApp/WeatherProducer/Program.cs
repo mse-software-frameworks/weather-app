@@ -23,6 +23,7 @@ var citiesConfig = new ConfigurationBuilder()
 
 Console.WriteLine($"Set cities to track: {citiesConfig}");
 
+// Delete & create topics
 var topicCreator = new TopicCreator(kafkaConfig, citiesConfig);
 try
 {
@@ -35,18 +36,15 @@ catch (Exception ex)
     return;
 }
 
-var kek = "";
-
-
-/*// Produce data
+// Produce data
 var timeSpan = TimeSpan.FromSeconds(1);
 var tokenSource = new CancellationTokenSource();
 var token = tokenSource.Token;
 var tasks = new List<Task>();
-var apiProducer = new ApiProducer(kafkaConfig);
+var apiProducer = new ApiProducer(kafkaConfig, citiesConfig);
 tasks.Add(apiProducer.Produce(timeSpan, token));
-var weatherAggregator = new WeatherAggregator(kafkaConfig);
-tasks.Add(weatherAggregator.Produce(token));
+// var weatherAggregator = new WeatherAggregator(kafkaConfig);
+// tasks.Add(weatherAggregator.Produce(token));
 
 // Wait for ctrl-c event
 // https://stackoverflow.com/a/13899429
@@ -63,10 +61,10 @@ Console.WriteLine("Initiating shutdown...");
 tokenSource.Cancel();
 try
 {
-    Task.WaitAll(tasks.ToArray(), token);
+    Task.WaitAll(tasks.ToArray());
 }
 catch (Exception ex) {}
 
 tokenSource.Dispose();
 
-Console.WriteLine("Shutdown complete");*/
+Console.WriteLine("Shutdown complete");

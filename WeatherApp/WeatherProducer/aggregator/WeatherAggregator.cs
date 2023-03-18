@@ -6,7 +6,7 @@ using Streamiz.Kafka.Net.Table;
 using WeatherProducer.AvroSpecific;
 using WeatherProducer.config;
 
-namespace WeatherProducer;
+namespace WeatherProducer.aggregator;
 
 public class WeatherAggregator
 {
@@ -51,6 +51,7 @@ public class WeatherAggregator
             .ToStream()
             .To<StringSerDes, StringSerDes>(_config.AverageWeatherTable);
 
+        
 
         var topology = streamBuilder.Build();
         var stream = new KafkaStream(topology, config);
