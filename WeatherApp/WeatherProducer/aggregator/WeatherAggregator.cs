@@ -33,26 +33,10 @@ public class WeatherAggregator
 
         // Weather temperature aggregation 
         // https://lgouellec.github.io/kafka-streams-dotnet/overview.html
-        // Stream (topic) -> Table (memory) -> Stream (topic)
-        // Library stores tables in memory or additional databases, not Kafka
-        // https://lgouellec.github.io/kafka-streams-dotnet/stores.html
-        /*streamBuilder
-            .Stream<string, Weather>(_config.WeatherTopic)
-            .GroupBy((k, v) => k)
-            .Aggregate(Aggregator, (key, value, aggregator) =>
-                {
-                    AverageTemperature(value, aggregator);
-                    AverageWindspeed(value, aggregator);
-                    AverageWindchill(value, aggregator);
-                    return aggregator;
-                }, InMemory.As<string, AverageWeather>(_config.AverageWeatherTable)
-                    .WithKeySerdes<StringSerDes>()
-                    .WithValueSerdes<SchemaAvroSerDes<AverageWeather>>()
-            )
-            .ToStream()
-            .To<StringSerDes, SchemaAvroSerDes<AverageWeather>>(_config.AverageWeatherTable);*/
-
-        streamBuilder
+        // Stream -> Table -> Stream
+        // Store table in variable to reuse it
+        // https://stackoverflow.com/a/42418291
+        var table = streamBuilder
             .Stream<string, Weather>(_config.WeatherTopic)
             .GroupBy((k, v) => k)
             .Aggregate(Aggregator, (key, value, aggregator) =>
@@ -65,81 +49,27 @@ public class WeatherAggregator
                     .Create(_config.AverageWeatherTable)
                     .WithKeySerdes<StringSerDes>()
                     .WithValueSerdes<SchemaAvroSerDes<AverageWeather>>()
-            )
-            .ToStream()
-            .To<StringSerDes, SchemaAvroSerDes<AverageWeather>>(_config.AverageWeatherTable);
-
-        // streamBuilder.Table("kek",
-        //     Materialized<string, AverageWeather, IKeyValueStore<Bytes, byte[]>>
-        //         .Create(_config.AverageWeatherTable)
-        //         .WithKeySerdes<StringSerDes>()
-        //         .WithValueSerdes<SchemaAvroSerDes<AverageWeather>>());
-
-        // Materialized<string, AverageWeather, IKeyValueStore<Bytes, byte[]>>
-        // .Create(_config.AverageWeatherTable)
-        // .WithKeySerdes<StringSerDes>()
-        // .WithValueSerdes<SchemaAvroSerDes<AverageWeather>>()
-
-
-        // var config2 =
-        //     new StreamConfig<StringSerDes, SchemaAvroSerDes<Weather>>
-        //     {
-        //         ApplicationId = "weather-aggregator2",
-        //         BootstrapServers = _config.Servers,
-        //         SchemaRegistryUrl = _config.SchemaRegistry
-        //     };
-        //
-        // var streamBuilder2 = new StreamBuilder();
-        // streamBuilder2
-            
-        // streamBuilder
-        //     .Stream<string, AverageWeather, StringSerDes, SchemaAvroSerDes<AverageWeather>>(_config.AverageWeatherTable)
-        //     .MapValues((k, v) => Format(v.average_temperature))
-        //     .To<StringSerDes, StringSerDes>(_config.AverageTemperatureTopic);
-
-        /*var branches = streamBuilder
-            .Stream<string, AverageWeather, StringSerDes, SchemaAvroSerDes<AverageWeather>>(_config.AverageWeatherTable)
-            .Branch((_, _) => true, (_, _) => true);
-        var branch1 = branches[0];
-        var branch2 = branches[1];
-        branch1
-            .MapValues((k, v) => Format(v.average_temperature))
-            .To<StringSerDes, StringSerDes>(_config.AverageTemperatureTopic);
-        branch2
-            .MapValues((k, v) => Format(v.average_windchill))
-            .To<StringSerDes, StringSerDes>(_config.AverageWindchillTopic);*/
-
-        // Create stream that can be reused
-        // https://stackoverflow.com/a/42418291
-        var tableStream = streamBuilder
-            .Stream<string, AverageWeather, StringSerDes, SchemaAvroSerDes<AverageWeather>>(
-                _config.AverageWeatherTable);
+            );
         
-        tableStream
+        table
             .MapValues((k, v) => Format(v.average_temperature))
+            .ToStream()
             .To<StringSerDes, StringSerDes>(_config.AverageTemperatureTopic);
-        tableStream
+        table
+            .MapValues((k, v) => Format(v.average_windspeed))
+            .ToStream()
+            .To<StringSerDes, StringSerDes>(_config.AverageWindspeedTopic);
+        table
             .MapValues((k, v) => Format(v.average_windchill))
+            .ToStream()
             .To<StringSerDes, StringSerDes>(_config.AverageWindchillTopic);
-
-        // streamBuilder
-        //     .Table<string, AverageWeather>(_config.AverageWeatherTable)
-        //     .MapValues((k, v) => v.average_windchill)
-        //     .ToStream()
-        //     .To<StringSerDes, DoubleSerDes>(_config.AverageWindchillTopic);
-
+        
 
         var topology = streamBuilder.Build();
         var stream = new KafkaStream(topology, config);
-
-        // var topology2 = streamBuilder.Build();
-        // var stream2 = new KafkaStream(topology2, config2);
-
+        
         cancellationToken.Register(() => { stream.Dispose(); });
-
-        // var task1 = stream.StartAsync();
-        // var task2 = stream2.StartAsync();
-        // await Task.WhenAll(task1, task2);
+        
         await stream.StartAsync();
     }
 

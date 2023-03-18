@@ -4,6 +4,7 @@
   "weatherTopic": "weather",
   "averageWeatherTable": "average-weather",
   "averageTemperatureTopic": "average-temperature",
+  "averageWindspeedTopic": "average-windspeed",
   "averageWindchillTopic": "average-windchill",
   "replications": 3
 }
