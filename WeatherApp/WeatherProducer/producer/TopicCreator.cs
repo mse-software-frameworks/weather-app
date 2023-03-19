@@ -50,13 +50,9 @@ public class TopicCreator
                     };
                 }));
 
-        try
-        {
-            await adminClient.DeleteTopicsAsync(deleteTopics);
-        }
-        catch (DeleteTopicsException ex)
-        {
-        }
+        // Delete topics if already exist
+        try { await adminClient.DeleteTopicsAsync(deleteTopics); }
+        catch (DeleteTopicsException _) { }
 
         // Wait a bit as topic deletion can take a while...
         // If executed immediately could lead to exception "topic xyz marked for deletion"...

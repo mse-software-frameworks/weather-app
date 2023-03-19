@@ -6,7 +6,7 @@ using WeatherProducer.producer;
 
 Console.OutputEncoding = Encoding.UTF8;
 Console.WriteLine("Weather Producer 🌤️");
-        
+
 var kafkaConfig = new ConfigurationBuilder()
     .AddJsonFile("config/kafka.json")
     .AddEnvironmentVariables()
@@ -41,8 +41,10 @@ var timeSpan = TimeSpan.FromSeconds(1);
 var tokenSource = new CancellationTokenSource();
 var token = tokenSource.Token;
 var tasks = new List<Task>();
+// Produces raw data from api
 var apiProducer = new ApiProducer(kafkaConfig, citiesConfig);
 tasks.Add(apiProducer.Produce(timeSpan, token));
+// Aggregates raw data
 var weatherAggregator = new WeatherAggregator(kafkaConfig);
 tasks.Add(weatherAggregator.Produce(token));
 
@@ -55,18 +57,12 @@ Console.CancelKeyPress += (sender, eventArgs) =>
     exitEvent.Set();
 };
 exitEvent.WaitOne();
-        
+
 // Cancel producer via token
 Console.WriteLine("Initiating shutdown...");
 tokenSource.Cancel();
-try
-{
-    Task.WaitAll(tasks.ToArray());
-}
-catch (Exception ex)
-{
-    Console.Error.WriteLine(ex.Message);
-}
+try { Task.WaitAll(tasks.ToArray()); }
+catch (Exception ex) { Console.Error.WriteLine(ex.Message); }
 
 tokenSource.Dispose();
 

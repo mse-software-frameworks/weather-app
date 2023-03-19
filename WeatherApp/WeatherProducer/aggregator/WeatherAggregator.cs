@@ -31,7 +31,7 @@ public class WeatherAggregator
 
         var streamBuilder = new StreamBuilder();
 
-        // Weather temperature aggregation 
+        // Weather aggregation 
         // https://lgouellec.github.io/kafka-streams-dotnet/overview.html
         // Stream -> Table -> Stream
         // Store table in variable to reuse it
@@ -117,6 +117,8 @@ public class WeatherAggregator
         return new AverageWeather
         {
             average_temperature = 0,
+            average_windspeed = 0,
+            average_windchill = 0,
             temperature_measurements = new List<double>(),
             windspeed_measurements = new List<double>(),
             windchill_measurements = new List<double>()
