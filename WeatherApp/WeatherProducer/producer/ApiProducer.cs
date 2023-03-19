@@ -2,6 +2,7 @@
 using Confluent.Kafka;
 using Confluent.SchemaRegistry;
 using Confluent.SchemaRegistry.Serdes;
+using Streamiz.Kafka.Net.SchemaRegistry.SerDes.Avro;
 using WeatherProducer.AvroSpecific;
 using WeatherProducer.config;
 
@@ -31,17 +32,59 @@ public class ApiProducer
             Url = _config.SchemaRegistry
         };
         using var schemaRegistry = new CachedSchemaRegistryClient(schemaRegistryConfig);
+        // schemaRegistry.RegisterSchemaAsync()
+        // schemaRegistry.RegisterSchemaAsync(new AvroSerializer<AverageWeather>(schemaRegistry))
         
+        // schemaRegistry.RegisterSchemaAsync("2", new Schema())
+
         var avroSerializerConfig = new AvroSerializerConfig
         {
             // optional Avro serializer properties:
-            BufferBytes = 100
+            BufferBytes = 100,
+            AutoRegisterSchemas = false
         };
+        // Weather schema will be automatically registered
         using var producer = 
             new ProducerBuilder<string, Weather>(producerConfig)
                 .SetValueSerializer(new AvroSerializer<Weather>(schemaRegistry, avroSerializerConfig))
                 .Build();
         
+        // Register schemas manually as producer (builder) can only auto register one
+        // but multiple ones are needed, e.g. AverageWeather is required later for "WeatherAggregator"
+        {
+            var subject = SubjectNameStrategy.Topic.ConstructValueSubjectName(_config.WeatherTopic, null);
+            var weatherSchema = Weather._SCHEMA.ToString();
+            await schemaRegistry.RegisterSchemaAsync(subject, weatherSchema);
+        }
+        {
+            var subject = SubjectNameStrategy.Topic.ConstructValueSubjectName(_config.AverageWeatherTable, null);
+            var averageWeatherSchema = AverageWeather._SCHEMA.ToString();
+            await schemaRegistry.RegisterSchemaAsync(subject, averageWeatherSchema);
+        }
+        
+        
+
+        // schemaRegistry.RegisterSchemaAsync("test", new SchemaAvroSerDes<AverageWeather>(), true);
+        // using var produer2 =
+        //     new ProducerBuilder<string, AverageWeather>(producerConfig)
+        //         .SetValueSerializer(new AvroSerializer<AverageWeather>(schemaRegistry, avroSerializerConfig))
+        //         .Build();
+        //
+        // var kek = AverageWeather._SCHEMA;
+        // await produer2.ProduceAsync("test", new Message<string, AverageWeather>()
+        // {
+        //     Key = "1",
+        //     Value = new AverageWeather
+        //     {
+        //         average_temperature = 0.0,
+        //         temperature_measurements = new List<double>(),
+        //         average_windspeed = 0.0,
+        //         windspeed_measurements = new List<double>(),
+        //         average_windchill = 0.0,
+        //         windchill_measurements = new List<double>(),
+        //     }
+        // }, cancellationToken);
+
         // Async loop
         // https://stackoverflow.com/a/30462232
         var currentPartition = 0;

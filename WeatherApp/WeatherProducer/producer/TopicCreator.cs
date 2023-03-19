@@ -35,9 +35,28 @@ public class TopicCreator
                 NumPartitions = partitions,
                 ReplicationFactor = replications
             }).ToArray();
+        var applicationId = _config.StreamApplicationId;
+        var deleteTopics =
+            _config.Topics()
+            .Concat(_config.Tables()
+                .SelectMany(table =>
+                {
+                    // "Streamiz.Kafka.Net" uses this format for table topics
+                    // Tables are automatically generated in "WeatherAggregator.cs"
+                    return new[]
+                    {
+                        $"{applicationId}-{table}-changelog",
+                        $"{applicationId}-{table}-repartition"
+                    };
+                }));
 
-        try { await adminClient.DeleteTopicsAsync(_config.Topics()); }
-        catch (DeleteTopicsException ex) { }
+        try
+        {
+            await adminClient.DeleteTopicsAsync(deleteTopics);
+        }
+        catch (DeleteTopicsException ex)
+        {
+        }
 
         // Wait a bit as topic deletion can take a while...
         // If executed immediately could lead to exception "topic xyz marked for deletion"...

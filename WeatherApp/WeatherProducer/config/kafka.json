@@ -6,5 +6,6 @@
   "averageTemperatureTopic": "average-temperature",
   "averageWindspeedTopic": "average-windspeed",
   "averageWindchillTopic": "average-windchill",
-  "replications": 3
+  "replications": 3,
+  "streamApplicationId": "weather-aggregator"
 }

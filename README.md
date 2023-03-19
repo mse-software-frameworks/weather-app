@@ -26,11 +26,17 @@
 
 
 
+![image-20230319135432554](.img/image-20230319135432554.png)
+
+![image-20230319135455543](.img/image-20230319135455543.png)
+
+
+
 Run locally via docker
 
 ```bash
 cd WeatherApp
-docker-compose down
+docker compose down  --remove-orphans
 docker-compose up
 ```
 
