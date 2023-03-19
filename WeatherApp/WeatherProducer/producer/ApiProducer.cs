@@ -55,6 +55,10 @@ public class ApiProducer
             var subject = SubjectNameStrategy.Topic.ConstructValueSubjectName(_config.WeatherTopic, null);
             var weatherSchema = Weather._SCHEMA.ToString();
             await schemaRegistry.RegisterSchemaAsync(subject, weatherSchema);
+            // Use this to modify schema
+            // await schemaRegistry.RegisterSchemaAsync(subject, new RegisteredSchema(
+            //     subject, 2, 1, weatherSchema, SchemaType.Avro, new List<SchemaReference>()
+            // ));
         }
         {
             var subject = SubjectNameStrategy.Topic.ConstructValueSubjectName(_config.AverageWeatherTable, null);

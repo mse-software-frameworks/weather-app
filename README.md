@@ -8,7 +8,7 @@ Run locally via docker
 
 ```bash
 cd WeatherApp
-docker compose down  --remove-orphans
+docker compose down --remove-orphans
 docker-compose up
 ```
 
@@ -87,6 +87,8 @@ The app then aggregates the raw data into a table; average temperature & windspe
 
 > Aggregator is located under `WeatherApp/WeatherProducer/aggregator/WeatherAggregator.cs`.
 
+> 🪧It may take a while for aggregation to start. Be patient.
+
 ![image-20230318225635182](.img/image-20230318225635182.png)
 
 ![image-20230318225718136](.img/image-20230318225718136.png)
@@ -99,9 +101,9 @@ From the aggregated data three steams are created: average-temperature, average-
 
 ### Questions
 
-How is the schema validated based on your selected compatibility mode.
+#### How is the schema validated based on your selected compatibility mode?
 
-Our setup uses the default `Backward` compatibility mode.
+Our setup uses the default `BACKWARD` compatibility mode.
 
 From the [Confluent docs](https://docs.confluent.io/platform/current/schema-registry/avro.html#compatibility-types):
 
@@ -114,6 +116,14 @@ From the [Confluent docs](https://docs.confluent.io/platform/current/schema-regi
 This is further described in the [Backward Compatibility section](https://docs.confluent.io/platform/current/schema-registry/avro.html#backward-compatibility):
 
 *`BACKWARD` compatibility means that consumers using the new schema can read data produced with the last schema. For example, if there are three schemas for a subject that change in order X-2, X-1, and X then `BACKWARD` compatibility ensures that consumers using the new schema X can process data written by producers using schema X or X-1, but not necessarily X-2. If the consumer using the new schema needs to be able to process data  written by all registered schemas, not just the last two schemas, then  use `BACKWARD_TRANSITIVE` instead of `BACKWARD`. For example, if there are three schemas for a subject that change in order X-2, X-1, and X then `BACKWARD_TRANSITIVE` compatibility ensures that consumers using the new schema X can process data written by producers using schema X, X-1, or X-2.*
+
+One more important point from the [Confluent docs](https://docs.confluent.io/platform/current/schema-registry/avro.html#specify-schema-compatibility-requirements-per-subject) is that **Kafka Streams only supports FULL, TRANSITIVE, and BACKWARD compatibility**.
+
+*For a plain consumer, it is safe to upgrade the consumer to the new schema after the producer is upgraded because a plain consumer reads only from the input topic. For Kafka Streams, the scenario is different. When you upgrade Kafka Streams, it also can read from the input topic (that now contains data with the new schema). However, in contrast to a plain consumer, Kafka Streams must also be able to read the old schema (from the state/changelog); therefore, only `BACKWARD` compatibility is supported. The Kafka Streams apps must be upgraded first, then it safe to upgrade the upstream producer that writes into the input topic.*
+
+*`FULL` and `TRANSITIVE` compatibility are always supported for Kafka Streams, as they include backward compatibility and so are, in effect, “stronger” settings than `BACKWARD`.*
+
+### Hands-on: Compatibility analysis
 
 To check if schemas were registered one can use
 
@@ -135,262 +145,59 @@ These information are also visible in the kafka ui at http://localhost:8080 in 
 
 ![image-20230319135455543](.img/image-20230319135455543.png)
 
+The `BACKWARD` compatibility allows to delete fields & add new optional ones. What happens if a new required field is added?
 
-
-
-
-
-
-
-
-
-
-Run locally via docker
-
-```bash
-cd WeatherApp
-docker compose down  --remove-orphans
-docker-compose up
-```
-
-Create topic
-
-```bash
-docker exec --interactive --tty broker-1 \
-kafka-topics --bootstrap-server broker-1:9092 \
-                       --create --topic weather \
-                       --partitions 3 \
-                       --replication-factor 3
-```
-
-#### Weather Producer & Aggregator
-
-Configure Kafka via config found under `WeatherApp/WeatherProducer/config/kafka.json`
+The `Weather.avcs` schema was modified with a new field.
 
 ```json
 {
-  "topic": "weather", // Topic name
-  "aggregateTopic": "average-temperature", // Aggregate Topic name
-  "servers": "localhost:29092,localhost:39092,localhost:49092", // Initial list of brokers as a CSV list of broker host or host:port
-  "partitions": 3, // Number of partitions to write 
-  "schemaRegistry": "http://localhost:8085" // URL to schema registry
-}
+  "name": "new_prop",
+  "type": "string",
+},
 ```
 
-Generate code from schema
+Then the schema registration code in the `ApiProducer` was modified.
 
-```bash
-cd WeatherApp/WeatherProducer/schema
-dotnet tool install --global Apache.Avro.Tools
+```c#
+var subject = SubjectNameStrategy.Topic.ConstructValueSubjectName(_config.WeatherTopic, null);
+var weatherSchema = Weather._SCHEMA.ToString();
+// Use this to modify schema
+await schemaRegistry.RegisterSchemaAsync(subject, new RegisteredSchema(
+	subject, 2, 1, weatherSchema, SchemaType.Avro, new List<SchemaReference>()
+));
 ```
 
-```bash
-avrogen -s .\Weather.avsc  .  --namespace "weather.serialization.avro:WeatherProducer.AvroSpecific" --skip-directories 
-avrogen -s .\AverageWeather.avsc  .  --namespace "weather.serialization.avro:WeatherProducer.AvroSpecific" --skip-directories 
+Running the app again would result in an expected error at this point:
+
+```c#
+Confluent.SchemaRegistry.SchemaRegistryException: Schema being registered is incompatible with an earlier schema for subject "weather-value", details: [Incompatibility{type:READER_FIELD_MISSING_DEFAULT_VALUE, location:/fields/2, message:new_prop, reader:{"type":"record","name":"Weather","namespace":"WeatherProducer.AvroSpecific","fields":[{"name":"id","type":"string"},{"name":"city","type":"string"},{"name":"new_prop","type":"string"},{"name":"latitude","type":"double"},{"name":"longitude","type":"double"},{"name":"generationtime_ms","type":"double"},{"name":"utc_offset_seconds","type":"double"},{"name":"timezone","type":"string"},{"name":"timezone_abbreviation","type":"string"},{"name":"elevation","type":"double"},{"name":"current_weather","type":{"type":"record","name":"CurrentWeather","fields":[{"name":"temperature","type":"double"},{"name":"windspeed","type":"double"},{"name":"winddirection","type":"double"},{"name":"weathercode","type":"int"},{"name":"time","type":"string"}]}}]}, writer:{"type":"record","name":"Weather","namespace":"WeatherProducer.AvroSpecific","fields":[{"name":"id","type":"string"},{"name":"city","type":"string"},{"name":"latitude","type":"double"},{"name":"longitude","type":"double"},{"name":"generationtime_ms","type":"double"},{"name":"utc_offset_seconds","type":"double"},{"name":"timezone","type":"string"},{"name":"timezone_abbreviation","type":"string"},{"name":"elevation","type":"double"},{"name":"current_weather","type":{"type":"record","name":"CurrentWeather","fields":[{"name":"temperature","type":"double"},{"name":"windspeed","type":"double"},{"name":"winddirection","type":"double"},{"name":"weathercode","type":"int"},{"name":"time","type":"string"}]}}]}}]; error code: 409
+   at Confluent.SchemaRegistry.RestService.ExecuteOnOneInstanceAsync(Func`1 createRequest)
+   at Confluent.SchemaRegistry.RestService.RequestAsync[T](String endPoint, HttpMethod method, Object[] jsonBody)
+   at Confluent.SchemaRegistry.RestService.RegisterSchemaAsync(String subject, Schema schema, Boolean normalize)
+   at Confluent.SchemaRegistry.CachedSchemaRegistryClient.RegisterSchemaAsync(String subject, Schema schema, Boolean normalize)
+   at WeatherProducer.producer.ApiProducer.Produce(TimeSpan interval, CancellationToken cancellationToken) in C:\Arbeit\SFR\weather-app\WeatherApp\WeatherProducer\producer\ApiProducer.cs:line 57
 ```
 
-Run producer app
+To fix this the error one must, as specified by the `BACKWARD` compatibility, make the field optional. In `avro` the default keyword can be used.
 
-```bash
-cd WeatherApp/WeatherProducer
-dotnet run
+```json
+{
+  "name": "new_prop",
+  "type": "string",
+  "default": "hello world"
+},
 ```
 
-Check if schemata were registered
+Running the app again results in a successfully registered schema with the new version 2.
 
-```bash
-curl localhost:8085/subjects
-# ["average-weather-value", ...]
-```
+![image-20230319164348543](.img/image-20230319164348543.png)
 
-Query schema compatibility mode
+![image-20230319164413341](.img/image-20230319164413341.png)
 
-```bash
-curl localhost:8085/config
-# {"compatibilityLevel":"BACKWARD"}
-```
 
-Read weather data
-
-> Id/Partition 0 => Vienna     
-> Id/Partition 1 => London      
-> Id/Partition 2 => Berlin
-
-```bash
-docker exec --interactive --tty schemaregistry \
-kafka-avro-console-consumer --bootstrap-server broker-1:9092 \
-                       --topic weather \
-                       --property schema.registry.url=http://localhost:8085 
-```
-
-Read aggregated stream (average temperature per city)
-
-```bash
-docker exec --interactive --tty broker-1 \
-kafka-console-consumer --bootstrap-server broker-1:9092 \
-                       --topic average-temperature \
-                       --property print.key=true
-```
-
-#### Questions
-
-How is the schema validated based on your selected compatibility mode.
-
-Our setup uses the default `Backward` compatibility mode.
-
-From the [Confluent docs](https://docs.confluent.io/platform/current/schema-registry/avro.html#compatibility-types):
-
-* Changes allowed:
-  * Delete fields
-  * Add optional fields
-* Checked against the last schema version
-* Upgrade first: Consumers
-
-This is further described in the [Backward Compatibility section](https://docs.confluent.io/platform/current/schema-registry/avro.html#backward-compatibility):
-
-*`BACKWARD` compatibility means that consumers using the new schema can read data produced with the last schema. For example, if there are three schemas for a subject that change in order X-2, X-1, and X then `BACKWARD` compatibility ensures that consumers using the new schema X can process data written by producers using schema X or X-1, but not necessarily X-2. If the consumer using the new schema needs to be able to process data  written by all registered schemas, not just the last two schemas, then  use `BACKWARD_TRANSITIVE` instead of `BACKWARD`. For example, if there are three schemas for a subject that change in order X-2, X-1, and X then `BACKWARD_TRANSITIVE` compatibility ensures that consumers using the new schema X can process data written by producers using schema X, X-1, or X-2.*
 
 
 
 ## Exercise Kafka Setup 
 
 See https://github.com/mse-software-frameworks/weather-app/tree/exercise-setup-kafka
-
-
-
-
-
-Run locally via docker
-
-```bash
-cd WeatherApp
-docker-compose down
-docker-compose up
-```
-
-Create topic
-
-```bash
-docker exec --interactive --tty broker-1 \
-kafka-topics --bootstrap-server broker-1:9092 \
-                       --create --topic weather \
-                       --partitions 3 \
-                       --replication-factor 3
-```
-
-Can be later deleted via
-
-```bash
-docker exec --interactive --tty broker-1 \
-kafka-topics --bootstrap-server broker-1:9092 \
-                       --delete --topic weather
-```
-
-#### Weather Producer
-
-Configure Kafka via config found under `WeatherApp/WeatherProducer/config/kafka.json`
-
-```json
-{
-  "topic": "weather", // Topic name
-  "servers": "localhost:9092,", // Initial list of brokers as a CSV list of broker host or host:port
-  "partitions": 1 // Number of partitions to write 
-}
-```
-
-Run producer app
-
-```bash
-cd WeatherApp/WeatherProducer
-dotnet run
-```
-
-Read current messages via
-
-```bash
-docker exec --interactive --tty broker-1 \
-kafka-console-consumer --bootstrap-server broker-1:9092 \
-                       --topic weather
-```
-
-Read all messages via
-
-```bash
-docker exec --interactive --tty broker-1 \
-kafka-console-consumer --bootstrap-server broker-1:9092 \
-                       --topic weather \
-                       --from-beginning
-```
-
-Read specific partition via
-
-```bash
-docker exec --interactive --tty broker-1 \
-kafka-console-consumer --bootstrap-server broker-1:9092 \
-                       --topic weather \
-                       --partition 1
-```
-
-#### Questions
-
-Analyze how the following things are related
-
-* Number of Brokers
-* Number of Partitions
-* Number of Replicas
-* in.sync.replica Configuration
-
-Our setup consists of 3 brokers. The topic `weather` consist of 3 partitions, so initially the first broker where the topic was created has 3 `weather` partitions which are identified by 0, 1 and 2. However, as the replication factor is set to 3, the two remaining brokers will also eventually share this configuration.
-
-The default [acknowledge mode for Kafka is `acks=all`](https://www.conduktor.io/kafka/kafka-topic-configuration-min-insync-replicas/), this means the producers considers messages as "written successfully" when the message is accepted by all in-sync replicas (ISR).  With `acks=0` a message would be "written successfully" the moment the message was sent without waiting for the broker to accept it at all. 
-
-On default, a topic has `min.insync.replicas=1` so in our setup we can tolerate two brokers being down.
-
-One can retrieve the current topic configuration via
-
-```bash
-docker exec --interactive --tty broker-1 \
-kafka-topics --bootstrap-server broker-1:9092 \
-                       --describe --topic weather
-```
-
-Similarly, one can increase the `min.insync.replicas`, in this case to 2
-
-```bash
-docker exec --interactive --tty broker-1 \
-kafka-configs --bootstrap-server broker-1:9092 \
-                       --alter --entity-type topics --entity-name weather --add-config min.insync.replicas=2
-```
-
-Now a message is only "written successfully" when two brokers have accepted it. Stopping one broker should not affect functionality
-
-```bash
-docker compose stop broker-2
-```
-
-However, stopping a second broker leads to insufficient all in-sync replicas
-
-```bash
-docker compose stop broker-3
-```
-
-```bash
-broker1     | org.apache.kafka.common.errors.NotEnoughReplicasException: The size of the current ISR Set(1) is insufficient to satisfy the min.isr requirement of 2 for partition weather-0
-```
-
-Restarting a down broker should restore functionality
-
-```
-docker compose start broker-2
-```
-
-At the end, one can also remove the `min.insync.replicas` constraint again
-
-```bash
-docker exec --interactive --tty broker-1 \
-kafka-configs --bootstrap-server broker-1:9092 \
-                       --alter --entity-type topics --entity-name weather --delete-config min.insync.replicas
-```
-
-Now one functional broker is sufficient again for writing messages.
-
