@@ -123,7 +123,7 @@ One more important point from the [Confluent docs](https://docs.confluent.io/pla
 
 *`FULL` and `TRANSITIVE` compatibility are always supported for Kafka Streams, as they include backward compatibility and so are, in effect, “stronger” settings than `BACKWARD`.*
 
-### Hands-on: Compatibility analysis
+#### Hands-on: Compatibility analysis
 
 To check if schemas were registered one can use
 
