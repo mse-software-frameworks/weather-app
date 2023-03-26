@@ -2,8 +2,7 @@
 using Confluent.Kafka;
 using Confluent.SchemaRegistry;
 using Confluent.SchemaRegistry.Serdes;
-using Streamiz.Kafka.Net.SchemaRegistry.SerDes.Avro;
-using WeatherApp.Kafka.Schemas.AvroSpecific;
+using WeatherApp.Kafka.Schemas.Avro;
 using WeatherProducer.config;
 
 namespace WeatherProducer.producer;
