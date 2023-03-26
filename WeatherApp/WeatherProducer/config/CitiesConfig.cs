@@ -1,6 +1,4 @@
-﻿using Confluent.Kafka;
-
-namespace WeatherProducer.config;
+﻿namespace WeatherProducer.config;
 
 public class CitiesConfig
 {
@@ -16,11 +14,11 @@ public class CitiesConfig
             return $"{{Partition={Partition}, Key={Key}, Latitude={Latitude}, Longitude={Longitude}}}";
         }
     }
-    
-    public List<CityConfig> cities { get; set; }
+
+    public List<CityConfig> Cities { get; set; } = null!;
 
     public override string ToString()
     {
-        return $"{{{string.Join(", ", cities)}}}";
+        return $"{{{string.Join(", ", Cities)}}}";
     }
 }

@@ -3,7 +3,7 @@ using Confluent.Kafka;
 using Confluent.SchemaRegistry;
 using Confluent.SchemaRegistry.Serdes;
 using Streamiz.Kafka.Net.SchemaRegistry.SerDes.Avro;
-using WeatherProducer.AvroSpecific;
+using WeatherApp.Kafka.Schemas.AvroSpecific;
 using WeatherProducer.config;
 
 namespace WeatherProducer.producer;
@@ -16,7 +16,7 @@ public class ApiProducer
     public ApiProducer(KafkaConfig config, CitiesConfig cities)
     {
         _config = config;
-        _cities = cities.cities;
+        _cities = cities.Cities;
     }
     
     public async Task Produce(TimeSpan interval, CancellationToken cancellationToken)

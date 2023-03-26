@@ -25,7 +25,7 @@ public class TopicCreator
         };
         using var adminClient = new AdminClientBuilder(adminConfig).Build();
 
-        var partitions = _cities.cities.Count;
+        var partitions = _cities.Cities.Count;
         var replications = _config.Replications;
         var topicSpecifications = _config
             .Topics()
