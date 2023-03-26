@@ -5,7 +5,7 @@ using Streamiz.Kafka.Net.SchemaRegistry.SerDes.Avro;
 using Streamiz.Kafka.Net.SerDes;
 using Streamiz.Kafka.Net.State;
 using Streamiz.Kafka.Net.Table;
-using WeatherProducer.AvroSpecific;
+using WeatherApp.Kafka.Schemas.AvroSpecific;
 using WeatherProducer.config;
 
 namespace WeatherProducer.aggregator;

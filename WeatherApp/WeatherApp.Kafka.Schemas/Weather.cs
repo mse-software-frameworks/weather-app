@@ -5,7 +5,7 @@
 //    is regenerated
 // </auto-generated>
 // ------------------------------------------------------------------------------
-namespace WeatherProducer.AvroSpecific
+namespace WeatherApp.Kafka.Schemas.Avro
 {
 	using System;
 	using System.Collections.Generic;
@@ -16,7 +16,7 @@ namespace WeatherProducer.AvroSpecific
 	[global::System.CodeDom.Compiler.GeneratedCodeAttribute("avrogen", "1.11.1")]
 	public partial class Weather : global::Avro.Specific.ISpecificRecord
 	{
-		public static global::Avro.Schema _SCHEMA = global::Avro.Schema.Parse(@"{""type"":""record"",""name"":""Weather"",""namespace"":""WeatherProducer.AvroSpecific"",""fields"":[{""name"":""id"",""type"":""string""},{""name"":""city"",""type"":""string""},{""name"":""latitude"",""type"":""double""},{""name"":""longitude"",""type"":""double""},{""name"":""generationtime_ms"",""type"":""double""},{""name"":""utc_offset_seconds"",""type"":""double""},{""name"":""timezone"",""type"":""string""},{""name"":""timezone_abbreviation"",""type"":""string""},{""name"":""elevation"",""type"":""double""},{""name"":""current_weather"",""type"":{""type"":""record"",""name"":""CurrentWeather"",""namespace"":""WeatherProducer.AvroSpecific"",""fields"":[{""name"":""temperature"",""type"":""double""},{""name"":""windspeed"",""type"":""double""},{""name"":""winddirection"",""type"":""double""},{""name"":""weathercode"",""type"":""int""},{""name"":""time"",""type"":""string""}]}}]}");
+		public static global::Avro.Schema _SCHEMA = global::Avro.Schema.Parse(@"{""type"":""record"",""name"":""Weather"",""namespace"":""WeatherApp.Kafka.Schemas.Avro"",""fields"":[{""name"":""id"",""type"":""string""},{""name"":""city"",""type"":""string""},{""name"":""latitude"",""type"":""double""},{""name"":""longitude"",""type"":""double""},{""name"":""generationtime_ms"",""type"":""double""},{""name"":""utc_offset_seconds"",""type"":""double""},{""name"":""timezone"",""type"":""string""},{""name"":""timezone_abbreviation"",""type"":""string""},{""name"":""elevation"",""type"":""double""},{""name"":""current_weather"",""type"":{""type"":""record"",""name"":""CurrentWeather"",""namespace"":""WeatherApp.Kafka.Schemas.Avro"",""fields"":[{""name"":""temperature"",""type"":""double""},{""name"":""windspeed"",""type"":""double""},{""name"":""winddirection"",""type"":""double""},{""name"":""weathercode"",""type"":""int""},{""name"":""time"",""type"":""string""}]}}]}");
 		private string _id;
 		private string _city;
 		private double _latitude;
@@ -26,7 +26,7 @@ namespace WeatherProducer.AvroSpecific
 		private string _timezone;
 		private string _timezone_abbreviation;
 		private double _elevation;
-		private WeatherProducer.AvroSpecific.CurrentWeather _current_weather;
+		private WeatherApp.Kafka.Schemas.Avro.CurrentWeather _current_weather;
 		public virtual global::Avro.Schema Schema
 		{
 			get
@@ -133,7 +133,7 @@ namespace WeatherProducer.AvroSpecific
 				this._elevation = value;
 			}
 		}
-		public WeatherProducer.AvroSpecific.CurrentWeather current_weather
+		public WeatherApp.Kafka.Schemas.Avro.CurrentWeather current_weather
 		{
 			get
 			{
@@ -174,7 +174,7 @@ namespace WeatherProducer.AvroSpecific
 			case 6: this.timezone = (System.String)fieldValue; break;
 			case 7: this.timezone_abbreviation = (System.String)fieldValue; break;
 			case 8: this.elevation = (System.Double)fieldValue; break;
-			case 9: this.current_weather = (WeatherProducer.AvroSpecific.CurrentWeather)fieldValue; break;
+			case 9: this.current_weather = (WeatherApp.Kafka.Schemas.Avro.CurrentWeather)fieldValue; break;
 			default: throw new global::Avro.AvroRuntimeException("Bad index " + fieldPos + " in Put()");
 			};
 		}

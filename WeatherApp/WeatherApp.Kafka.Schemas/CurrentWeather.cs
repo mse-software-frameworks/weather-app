@@ -5,7 +5,7 @@
 //    is regenerated
 // </auto-generated>
 // ------------------------------------------------------------------------------
-namespace WeatherProducer.AvroSpecific
+namespace WeatherApp.Kafka.Schemas.Avro
 {
 	using System;
 	using System.Collections.Generic;
@@ -16,7 +16,7 @@ namespace WeatherProducer.AvroSpecific
 	[global::System.CodeDom.Compiler.GeneratedCodeAttribute("avrogen", "1.11.1")]
 	public partial class CurrentWeather : global::Avro.Specific.ISpecificRecord
 	{
-		public static global::Avro.Schema _SCHEMA = global::Avro.Schema.Parse(@"{""type"":""record"",""name"":""CurrentWeather"",""namespace"":""WeatherProducer.AvroSpecific"",""fields"":[{""name"":""temperature"",""type"":""double""},{""name"":""windspeed"",""type"":""double""},{""name"":""winddirection"",""type"":""double""},{""name"":""weathercode"",""type"":""int""},{""name"":""time"",""type"":""string""}]}");
+		public static global::Avro.Schema _SCHEMA = global::Avro.Schema.Parse(@"{""type"":""record"",""name"":""CurrentWeather"",""namespace"":""WeatherApp.Kafka.Schemas.Avro"",""fields"":[{""name"":""temperature"",""type"":""double""},{""name"":""windspeed"",""type"":""double""},{""name"":""winddirection"",""type"":""double""},{""name"":""weathercode"",""type"":""int""},{""name"":""time"",""type"":""string""}]}");
 		private double _temperature;
 		private double _windspeed;
 		private double _winddirection;
