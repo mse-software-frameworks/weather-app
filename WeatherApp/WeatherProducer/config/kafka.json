@@ -3,6 +3,7 @@
   "schemaRegistry": "http://localhost:8085",
   "weatherTopic": "weather",
   "averageWeatherTable": "average-weather",
+  "aggregatedWeatherTopic": "aggregated-weather",
   "averageTemperatureTopic": "average-temperature",
   "averageWindspeedTopic": "average-windspeed",
   "averageWindchillTopic": "average-windchill",

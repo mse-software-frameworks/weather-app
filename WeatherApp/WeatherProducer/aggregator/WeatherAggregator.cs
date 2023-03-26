@@ -52,17 +52,31 @@ public class WeatherAggregator
             );
         
         table
-            .MapValues((k, v) => Format(v.average_temperature))
+            .MapValues((k, v) => {
+                return new AggregatedWeather
+                {
+                    AverageTemperature = Format(v.average_temperature),
+                    AverageWindspeed = Format(v.average_windspeed),
+                    AverageWindchill = Format(v.average_windchill)
+                };
+            })
             .ToStream()
-            .To<StringSerDes, StringSerDes>(_config.AverageTemperatureTopic);
-        table
-            .MapValues((k, v) => Format(v.average_windspeed))
-            .ToStream()
-            .To<StringSerDes, StringSerDes>(_config.AverageWindspeedTopic);
-        table
-            .MapValues((k, v) => Format(v.average_windchill))
-            .ToStream()
-            .To<StringSerDes, StringSerDes>(_config.AverageWindchillTopic);
+            .To<StringSerDes, SchemaAvroSerDes<AggregatedWeather>>(_config.AggregatedWeatherTopic);
+
+        // Combined averages to one topic, because it makes more sense to only have to subscribe to one topic
+        // instead of three
+        //table
+        //    .MapValues((k, v) => Format(v.average_windspeed))
+        //    .ToStream()
+        //    .To<StringSerDes, StringSerDes>(_config.AverageWindspeedTopic);
+        //table
+        //    .MapValues((k, v) => Format(v.average_windspeed))
+        //    .ToStream()
+        //    .To<StringSerDes, StringSerDes>(_config.AverageWindspeedTopic);
+        //table
+        //    .MapValues((k, v) => Format(v.average_windchill))
+        //    .ToStream()
+        //    .To<StringSerDes, StringSerDes>(_config.AverageWindchillTopic);
         
 
         var topology = streamBuilder.Build();
