@@ -45,8 +45,6 @@ public class Consumer
             try
             {
                 var result = consumer.Consume(cancellationToken);
-                Console.WriteLine(result.Message.Value.AverageTemperature);
-
                 _dbClient.InsertData(result.Message.Key, result.Message.Value);
             }
             catch (OperationCanceledException)

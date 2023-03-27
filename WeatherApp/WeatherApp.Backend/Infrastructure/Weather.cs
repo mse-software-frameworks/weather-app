@@ -10,5 +10,15 @@ namespace WeatherApp.Backend.Infrastructure
         public string AverageTemperature { get; set; } = null!;
         public string AverageWindspeed { get; set; } = null!;
         public string AverageWindchill { get; set; } = null!;
+
+        public override string ToString()
+        {
+            return $"{{{nameof(Id)}: {Id}, " +
+                $"{nameof(City)}: {City}, " +
+                $"{nameof(Date)}: {Date}, " +
+                $"{nameof(AverageTemperature)}: {AverageTemperature}, " +
+                $"{nameof(AverageWindspeed)}: {AverageWindspeed}, " +
+                $"{nameof(AverageWindchill)}: {AverageWindchill}}}";
+        }
     }
 }

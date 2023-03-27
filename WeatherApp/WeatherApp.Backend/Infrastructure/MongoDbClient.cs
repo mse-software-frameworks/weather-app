@@ -5,7 +5,7 @@ namespace WeatherApp.Backend.Infrastructure
 {
     public class MongoDbClient : IDbClient
     {
-        private MongoClient _client;
+        private readonly MongoClient _client;
 
         public MongoDbClient(string connectionString)
         {
@@ -22,6 +22,8 @@ namespace WeatherApp.Backend.Infrastructure
                 AverageWindspeed = aggregatedWeather.AverageWindspeed,
                 AverageWindchill = aggregatedWeather.AverageWindchill,
             };
+
+            Console.WriteLine($"Write to db: {weather}");
 
             _client.GetDatabase("weatherAppDb")
                 .GetCollection<Weather>(nameof(Weather))
