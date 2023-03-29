@@ -1,5 +1,45 @@
 # weather-app 🌤️
 
+## Exercise Backend & Database
+
+# TODO Update readme
+
+Mongodb volume folder
+
+```
+cd WeatherApp
+mkdir WeatherApp.Backend/data
+```
+
+
+
+Test mongodd
+
+```
+mongosh "mongodb://root:root@localhost:27017"
+```
+
+```
+use weatherAppDb
+db.Weather.find()
+```
+
+```json
+[
+  {
+    _id: ObjectId("642444150a019fc9b14f573a"),
+    City: 'Vienna',
+    Date: ISODate("2023-03-27T13:58:45.549Z"),
+    AverageTemperature: '10.49',
+    AverageWindspeed: '6.99',
+    AverageWindchill: '9.79'
+  },
+  ...
+]
+```
+
+
+
 ## Exercise Streaming
 
 ### Setup
@@ -139,7 +179,7 @@ curl localhost:8085/config
 # {"compatibilityLevel":"BACKWARD"}
 ```
 
-These information are also visible in the kafka ui at http://localhost:8080 in the schema registry tab
+These information are also visible in the kafka ui at http://localhost:8080 in the schema registry tab
 
 ![image-20230319135432554](.img/image-20230319135432554.png)
 
