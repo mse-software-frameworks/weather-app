@@ -5,7 +5,7 @@
 //    is regenerated
 // </auto-generated>
 // ------------------------------------------------------------------------------
-namespace WeatherProducer.AvroSpecific
+namespace WeatherApp.Kafka.Schemas.Avro
 {
 	using System;
 	using System.Collections.Generic;
@@ -16,7 +16,7 @@ namespace WeatherProducer.AvroSpecific
 	[global::System.CodeDom.Compiler.GeneratedCodeAttribute("avrogen", "1.11.1")]
 	public partial class AverageWeather : global::Avro.Specific.ISpecificRecord
 	{
-		public static global::Avro.Schema _SCHEMA = global::Avro.Schema.Parse(@"{""type"":""record"",""name"":""AverageWeather"",""namespace"":""WeatherProducer.AvroSpecific"",""fields"":[{""name"":""average_temperature"",""type"":""double""},{""name"":""temperature_measurements"",""type"":{""type"":""array"",""items"":""double""}},{""name"":""average_windspeed"",""type"":""double""},{""name"":""windspeed_measurements"",""type"":{""type"":""array"",""items"":""double""}},{""name"":""average_windchill"",""type"":""double""},{""name"":""windchill_measurements"",""type"":{""type"":""array"",""items"":""double""}}]}");
+		public static global::Avro.Schema _SCHEMA = global::Avro.Schema.Parse(@"{""type"":""record"",""name"":""AverageWeather"",""namespace"":""WeatherApp.Kafka.Schemas.Avro"",""fields"":[{""name"":""average_temperature"",""type"":""double""},{""name"":""temperature_measurements"",""type"":{""type"":""array"",""items"":""double""}},{""name"":""average_windspeed"",""type"":""double""},{""name"":""windspeed_measurements"",""type"":{""type"":""array"",""items"":""double""}},{""name"":""average_windchill"",""type"":""double""},{""name"":""windchill_measurements"",""type"":{""type"":""array"",""items"":""double""}}]}");
 		private double _average_temperature;
 		private IList<System.Double> _temperature_measurements;
 		private double _average_windspeed;

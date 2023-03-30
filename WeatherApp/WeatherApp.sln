@@ -10,6 +10,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DevOps", "DevOps", "{BAFB4B
 		docker-compose.yml = docker-compose.yml
 	EndProjectSection
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WeatherApp.Kafka.Schemas", "WeatherApp.Kafka.Schemas\WeatherApp.Kafka.Schemas.csproj", "{226E672B-6D92-4E4A-BF47-7C0938C7BAC3}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WeatherApp.Backend", "WeatherApp.Backend\WeatherApp.Backend.csproj", "{F3073E47-A511-4AF4-9233-07C515C8A825}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -20,6 +24,14 @@ Global
 		{DD4257D4-2AAB-4AF3-BF2F-EDB1A5D580C6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DD4257D4-2AAB-4AF3-BF2F-EDB1A5D580C6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DD4257D4-2AAB-4AF3-BF2F-EDB1A5D580C6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{226E672B-6D92-4E4A-BF47-7C0938C7BAC3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{226E672B-6D92-4E4A-BF47-7C0938C7BAC3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{226E672B-6D92-4E4A-BF47-7C0938C7BAC3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{226E672B-6D92-4E4A-BF47-7C0938C7BAC3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F3073E47-A511-4AF4-9233-07C515C8A825}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F3073E47-A511-4AF4-9233-07C515C8A825}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F3073E47-A511-4AF4-9233-07C515C8A825}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F3073E47-A511-4AF4-9233-07C515C8A825}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

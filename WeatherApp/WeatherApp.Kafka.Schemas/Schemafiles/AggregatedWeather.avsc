@@ -1,0 +1,19 @@
+﻿{
+  "namespace": "weather.serialization.avro",
+  "name": "AggregatedWeather",
+  "type": "record",
+  "fields": [
+    {
+      "name": "AverageTemperature",
+      "type": "string"
+    },
+    {
+      "name": "AverageWindspeed",
+      "type": "string"
+    },
+    {
+      "name": "AverageWindchill",
+      "type": "string"
+    }
+  ]
+}

@@ -6,6 +6,7 @@ public class KafkaConfig
     public string SchemaRegistry { get; set; } = null!;
     public string WeatherTopic { get; set; } = null!;
     public string AverageWeatherTable { get; set; } = null!;
+    public string AggregatedWeatherTopic { get; set; } = null!;
     public string AverageTemperatureTopic { get; set; } = null!;
     public string AverageWindspeedTopic { get; set; } = null!;
     public string AverageWindchillTopic { get; set; } = null!;
@@ -23,7 +24,7 @@ public class KafkaConfig
 
     public string[] Topics()
     {
-        return new[] { WeatherTopic, AverageTemperatureTopic, AverageWindspeedTopic, AverageWindchillTopic };
+        return new[] { WeatherTopic, AggregatedWeatherTopic, AverageTemperatureTopic, AverageWindspeedTopic, AverageWindchillTopic };
     }
 
     public string[] Tables()
