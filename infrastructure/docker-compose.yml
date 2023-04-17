@@ -146,5 +146,7 @@ services:
   weather-producer:
     image: weather-producer-image
     container_name: weather-producer
-    depends_on:
-      - schemaregistry
+    
+  weather-backend:
+    image: weather-backend-image
+    container_name: weather-backend

@@ -88,3 +88,4 @@ docker build -t weather-backend-image -f Dockerfile.backend .
 * https://docs.k3s.io/installation/kube-dashboard
 * https://learn.microsoft.com/en-us/dotnet/core/docker/build-container?tabs=windows
 * https://stackoverflow.com/a/72928176
+* https://stackoverflow.com/questions/47928827/how-to-install-rocksdb-into-ubuntu

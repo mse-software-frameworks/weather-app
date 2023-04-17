@@ -17,4 +17,6 @@ RUN dotnet publish -c Release -o out
 FROM mcr.microsoft.com/dotnet/aspnet:6.0
 WORKDIR /App/WeatherProducer
 COPY --from=build-env /App/WeatherProducer/out .
+RUN apt-get update
+RUN apt-get install -y librocksdb-dev
 ENTRYPOINT ["dotnet", "WeatherProducer.dll"]
