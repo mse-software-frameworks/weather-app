@@ -1,17 +1,20 @@
-﻿FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build-env
+﻿FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build-env
 WORKDIR /App
 
 # Copy everything
 ADD ./WeatherProducer /App/WeatherProducer
-COPY ./WeatherApp.Kafka.Schemas /App/WeatherApp.Kafka.Schemas
+ADD ./WeatherApp.Kafka.Schemas /App/WeatherApp.Kafka.Schemas
 WORKDIR /App/WeatherProducer
+# Update config files
+RUN sed -i 's/localhost:29092,localhost:39092,localhost:49092/broker-1:29092,broker-2:39092,broker-3:49092/g' ./config/kafka.json
+RUN sed -i 's/localhost:8085/schemaregistry:8085/g' ./config/kafka.json
 # Restore as distinct layers
 RUN dotnet restore
 # Build and publish a release
 RUN dotnet publish -c Release -o out
 
 # Build runtime image
-FROM mcr.microsoft.com/dotnet/aspnet:7.0
+FROM mcr.microsoft.com/dotnet/aspnet:6.0
 WORKDIR /App/WeatherProducer
 COPY --from=build-env /App/WeatherProducer/out .
-ENTRYPOINT ["dotnet", "DotNet.Docker.dll"]
+ENTRYPOINT ["dotnet", "WeatherProducer.dll"]

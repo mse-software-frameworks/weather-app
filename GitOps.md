@@ -71,13 +71,11 @@ docker build -t weather-producer-image -f Dockerfile.producer .
 
 > Remove `WeatherApp.Backend/data` before running `docker build`
 
-
-
-
-
 ```
 docker build -t weather-backend-image -f Dockerfile.backend .
 ```
+
+
 
 
 
@@ -89,3 +87,4 @@ docker build -t weather-backend-image -f Dockerfile.backend .
 * https://stackoverflow.com/a/73425733
 * https://docs.k3s.io/installation/kube-dashboard
 * https://learn.microsoft.com/en-us/dotnet/core/docker/build-container?tabs=windows
+* https://stackoverflow.com/a/72928176
