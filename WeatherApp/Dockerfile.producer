@@ -6,7 +6,7 @@ ADD ./WeatherProducer /App/WeatherProducer
 ADD ./WeatherApp.Kafka.Schemas /App/WeatherApp.Kafka.Schemas
 WORKDIR /App/WeatherProducer
 # Update config files
-RUN sed -i 's/localhost:29092,localhost:39092,localhost:49092/broker-1:29092,broker-2:39092,broker-3:49092/g' ./config/kafka.json
+RUN sed -i 's/localhost:29092,localhost:39092,localhost:49092/broker-1:9092,broker-2:9092,broker-3:9092/g' ./config/kafka.json
 RUN sed -i 's/localhost:8085/schemaregistry:8085/g' ./config/kafka.json
 # Restore as distinct layers
 RUN dotnet restore
