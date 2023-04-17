@@ -62,7 +62,22 @@ The Dashboard is now accessible at:
 
 ![image-20230417192708488](.img/image-20230417192708488.png)
 
+### Build Containers for Weather Producer & Weather Backend
 
+```
+cd WeatherApp
+docker build -t weather-producer-image -f Dockerfile.producer .
+```
+
+> Remove `WeatherApp.Backend/data` before running `docker build`
+
+
+
+
+
+```
+docker build -t weather-backend-image -f Dockerfile.backend .
+```
 
 
 
@@ -73,3 +88,4 @@ The Dashboard is now accessible at:
 * https://www.guide2wsl.com/k3s/
 * https://stackoverflow.com/a/73425733
 * https://docs.k3s.io/installation/kube-dashboard
+* https://learn.microsoft.com/en-us/dotnet/core/docker/build-container?tabs=windows
