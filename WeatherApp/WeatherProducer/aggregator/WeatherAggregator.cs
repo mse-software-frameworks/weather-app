@@ -82,9 +82,9 @@ public class WeatherAggregator
         var topology = streamBuilder.Build();
         var stream = new KafkaStream(topology, config);
         
-        cancellationToken.Register(() => { stream.Dispose(); });
+        // cancellationToken.Register(() => { stream.Dispose(); });
         
-        await stream.StartAsync();
+        await stream.StartAsync(cancellationToken);
     }
 
     private static void AverageTemperature(Weather value, AverageWeather aggregator)

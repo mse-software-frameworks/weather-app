@@ -2,6 +2,7 @@
 using Confluent.Kafka;
 using Confluent.SchemaRegistry;
 using Confluent.SchemaRegistry.Serdes;
+using Streamiz.Kafka.Net.Errors;
 using WeatherApp.Kafka.Schemas.Avro;
 using WeatherProducer.config;
 
@@ -64,29 +65,6 @@ public class ApiProducer
             var averageWeatherSchema = AverageWeather._SCHEMA.ToString();
             await schemaRegistry.RegisterSchemaAsync(subject, averageWeatherSchema);
         }
-        
-        
-
-        // schemaRegistry.RegisterSchemaAsync("test", new SchemaAvroSerDes<AverageWeather>(), true);
-        // using var produer2 =
-        //     new ProducerBuilder<string, AverageWeather>(producerConfig)
-        //         .SetValueSerializer(new AvroSerializer<AverageWeather>(schemaRegistry, avroSerializerConfig))
-        //         .Build();
-        //
-        // var kek = AverageWeather._SCHEMA;
-        // await produer2.ProduceAsync("test", new Message<string, AverageWeather>()
-        // {
-        //     Key = "1",
-        //     Value = new AverageWeather
-        //     {
-        //         average_temperature = 0.0,
-        //         temperature_measurements = new List<double>(),
-        //         average_windspeed = 0.0,
-        //         windspeed_measurements = new List<double>(),
-        //         average_windchill = 0.0,
-        //         windchill_measurements = new List<double>(),
-        //     }
-        // }, cancellationToken);
 
         // Async loop
         // https://stackoverflow.com/a/30462232

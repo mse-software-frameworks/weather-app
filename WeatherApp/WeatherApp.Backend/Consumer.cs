@@ -19,7 +19,7 @@ public class Consumer
         _dbClient = dbClient;
     }
 
-    public void Consume(CancellationToken cancellationToken)
+    public async Task Consume(CancellationToken cancellationToken)
     {
         var schemaRegistryConfig = new SchemaRegistryConfig()
         {
@@ -39,6 +39,15 @@ public class Consumer
             .Build();
 
         consumer.Subscribe(_kafkaSettings.TopicName);
+        /*try
+        {
+            consumer.Subscribe(_kafkaSettings.TopicName);
+        }*/
+        /*catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+            Environment.Exit(1);
+        }*/
 
         while (!cancellationToken.IsCancellationRequested)
         {
@@ -52,6 +61,11 @@ public class Consumer
                 Console.WriteLine("Aborting...");
                 return;
             }
+            /*catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                
+            }*/
         }
     }
 }
