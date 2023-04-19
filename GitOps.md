@@ -79,6 +79,14 @@ docker build -t weather-backend-image -f Dockerfile.backend .
 
 ### Translate Docker Compose to Kubernetes Resources
 
+First move local images to k3s
+
+```
+cd infrastructure
+docker save weather-producer-image | sudo k3s ctr images import --digests -
+docker save weather-backend-image | sudo k3s ctr images import --digests -
+```
+
 Install Kompose
 
 ```
@@ -94,13 +102,17 @@ cd infrastructure
 kompose convert
 ```
 
+> ⚠️ Some necessary manual modifications were made to the generated service files as some (internal) port were missing that are required for proper functionality.
+
+Run cluster
+
 ```
 kubectl apply -f .
 ```
 
-> Some manual modifications were made to the generated service files as some (internal) port were missing that are required for proper functionality.
 
 
+### Test
 
 Test if cluster is running but first proxy `kafka ui` to localhost
 
@@ -109,6 +121,24 @@ kubectl port-forward deployment/kafka-ui 8080:8080
 ```
 
 Access UI at http://localhost:8080/ui
+
+![image-20230419155310453](.img/image-20230419155310453.png)
+
+![image-20230419155327175](.img/image-20230419155327175.png)
+
+
+
+Check if .NET apps write data via dashboard
+
+![image-20230419155133747](.img/image-20230419155133747.png)
+
+![image-20230419155028970](.img/image-20230419155028970.png)
+
+
+
+## GitOps with Argo
+
+# TODO
 
 
 

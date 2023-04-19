@@ -12,6 +12,7 @@ spec:
   containers:
     - image: weather-producer-image
       name: weather-producer
+      imagePullPolicy: Never
       resources: {}
   restartPolicy: OnFailure
 status: {}

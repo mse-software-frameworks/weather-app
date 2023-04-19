@@ -12,6 +12,7 @@ spec:
   containers:
     - image: weather-backend-image
       name: weather-backend
+      imagePullPolicy: Never
       resources: {}
   restartPolicy: OnFailure
 status: {}
