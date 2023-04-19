@@ -11,7 +11,7 @@ curl -sfL https://get.k3s.io | sh -
 Start
 
 ```
-k3s server 
+sudo k3s server 
 ```
 
 Check
@@ -69,13 +69,46 @@ cd WeatherApp
 docker build -t weather-producer-image -f Dockerfile.producer .
 ```
 
-> Remove `WeatherApp.Backend/data` before running `docker build`
+> Remove `WeatherApp.Backend/data` before running `docker build`
 
 ```
 docker build -t weather-backend-image -f Dockerfile.backend .
 ```
 
 
+
+### Translate Docker Compose to Kubernetes Resources
+
+Install Kompose
+
+```
+curl -L https://github.com/kubernetes/kompose/releases/download/v1.26.0/kompose-linux-amd64 -o kompose
+chmod +x kompose
+sudo mv ./kompose /usr/local/bin/kompose
+```
+
+Convert `docker-compose`
+
+```
+cd infrastructure
+kompose convert
+```
+
+```
+kubectl apply -f .
+```
+
+> Some manual modifications were made to the generated service files as some (internal) port were missing that are required for proper functionality.
+
+
+
+Test if cluster is running but first proxy `kafka ui` to localhost
+
+```
+kubectl port-forward deployment/kafka-ui 8080:8080
+```
+
+Access UI at http://localhost:8080/ui
 
 
 
@@ -89,3 +122,4 @@ docker build -t weather-backend-image -f Dockerfile.backend .
 * https://learn.microsoft.com/en-us/dotnet/core/docker/build-container?tabs=windows
 * https://stackoverflow.com/a/72928176
 * https://stackoverflow.com/questions/47928827/how-to-install-rocksdb-into-ubuntu
+* https://kubernetes.io/docs/tasks/configure-pod-container/translate-compose-kubernetes/

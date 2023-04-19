@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  annotations:
+    kompose.cmd: kompose convert
+    kompose.version: 1.26.0 (40646f47)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: weather-backend
+  name: weather-backend
+spec:
+  containers:
+    - image: weather-backend-image
+      name: weather-backend
+      resources: {}
+  restartPolicy: OnFailure
+status: {}
