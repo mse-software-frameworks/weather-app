@@ -136,7 +136,7 @@ Check if .NET apps write data via dashboard
 
 
 
-## GitOps with Argo
+## GitOps with ArgoCD
 
 Install ArgoCD
 
@@ -146,30 +146,46 @@ kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/st
 ```
 
 Change the argocd-server service type to LoadBalancer:
+
 ```
 kubectl patch svc argocd-server -n argocd -p '{"spec": {"type": "LoadBalancer"}}'
 ```
 
-Download ArgoCD CLI
+Forward ArgoCD port to 8080
 
-eg on Mac
-```
-brew install argocd
-```
-
-or from  https://github.com/argoproj/argo-cd/releases/latest
-
-Forward the port to 8079
 ```
 kubectl port-forward svc/argocd-server -n argocd 8080:443
 ```
 
 Then get the initial password for the admin-user
+
 ```
 argocd admin initial-password -n argocd
 ```
 
-And login to https://localhost:8079 using 'admin' and the password.
+> Requires ArgoCD Cli, eg. on Mac 
+>
+> ```
+> brew install argocd
+> ```
+>
+> or from  https://github.com/argoproj/argo-cd/releases/latest
+>
+> Alternatively one can obtain the password manually via
+>
+> ```
+> kubectl get secret argocd-initial-admin-secret -n argocd -o yaml
+> ```
+>
+> The given password must be decoded via `base64 --decode <password>`
+
+And login to https://localhost:8080 using 'admin' and the password.
+
+
+
+
+
+
 
 Click on create and enter the form.
 
