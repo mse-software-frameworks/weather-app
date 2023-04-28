@@ -163,42 +163,79 @@ Then get the initial password for the admin-user
 argocd admin initial-password -n argocd
 ```
 
-> Requires ArgoCD Cli, eg. on Mac 
+> Command requires ArgoCD Cli to be installed. One can obtain it on Mac via
 >
 > ```
 > brew install argocd
 > ```
 >
-> or from  https://github.com/argoproj/argo-cd/releases/latest
+> or for other systems from https://github.com/argoproj/argo-cd/releases/latest
 >
-> Alternatively one can obtain the password manually via
+> Alternatively one can obtain the password manually without the cli tool via
 >
 > ```
 > kubectl get secret argocd-initial-admin-secret -n argocd -o yaml
 > ```
 >
-> The given password must be decoded via `base64 --decode <password>`
+> The given password is encoded and can be decoded via `base64 --decode <password>`
 
 And login to https://localhost:8080 using 'admin' and the password.
 
 
 
+### Setup Weather-App
+
+To register infrastructure one must create ArgoCD applications. One can do it via UI or declare it like in the following via a declarative kubernetes resource.
+
+```yaml
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: weather-app-argo-application
+  namespace: argocd
+spec:
+  project: default
+
+  source:
+    repoURL: https://github.com/mse-software-frameworks/weather-app
+    targetRevision: exercise-infrastructure-argocd
+    path: infrastructure
+  destination: 
+    server: https://kubernetes.default.svc
+    namespace: weather-app
+
+  syncPolicy:
+    syncOptions:
+    - CreateNamespace=true
+
+    automated:
+      selfHeal: true
+      prune: true
+```
+
+The most important aspects of the configuration are the source and destination properties. The source marks the remote git repository where all infrastructure is declared as IaC. Here we are reusing our existing GitHub repository for it but specifying that ArgoCD should only inspect the `infrastructure` directory of the `exercise-infrastructure-argocd` branch. The destination is the running kubernetes instance. When running locally one can simply use `https://kubernetes.default.svc`.
+
+In the policies section `selfHeal` and `prune` were explicitly specified. That means that local changes to infrastructure (e.g. manually editing the resources by hand) are prohibited and will be automatically reverted. Also, removing a resource configurations in the repository will lead to termination and removal of the corresponding running resource in kubernetes on sync.
+
+Creating an ArgoCD application is the only time one must manually apply a configuration in GitOps. After that ArgoCD will be solely responsible for managing the registered infrastructure.
+
+```
+kubectl apply -f argocd.yaml
+```
+
+Returning to https://localhost:8080 one should see the new application created.
+
+![image-20230428174226220](.img/image-20230428174226220.png)
+
+![image-20230428173404660](.img/image-20230428173404660.png)
+
+Our infrastructure seems not to support ArgoCD's health check feature, however it is running fine as visible by the status in the kubernetes dashboard.
+
+![image-20230428173339078](.img/image-20230428173339078.png)
 
 
 
 
-Click on create and enter the form.
-
-
-![imginformation](.img/imginformation.png)
-
-for path, choose the path of the deployment yaml
-![imginformation](.img/imgsource.png)
-![imginformation](.img/imgdestination.png)
-
-and click on create. 
-
-The application is now running and you can now view its resource components, logs, events, and assessed health status.
 
 ## Sources
 
@@ -211,3 +248,6 @@ The application is now running and you can now view its resource components, log
 * https://stackoverflow.com/a/72928176
 * https://stackoverflow.com/questions/47928827/how-to-install-rocksdb-into-ubuntu
 * https://kubernetes.io/docs/tasks/configure-pod-container/translate-compose-kubernetes/
+* https://argo-cd.readthedocs.io/en/stable/operator-manual/declarative-setup/#applications
+* https://argo-cd.readthedocs.io/en/stable/getting_started/
+* https://www.youtube.com/watch?v=MeU5_k9ssrs
