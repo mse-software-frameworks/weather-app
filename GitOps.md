@@ -177,13 +177,13 @@ argocd admin initial-password -n argocd
 > kubectl get secret argocd-initial-admin-secret -n argocd -o yaml
 > ```
 >
-> The given password is encoded and can be decoded via `base64 --decode <password>`
+> The given password is encoded and can be decoded via `base64 --decode <password>`
 
 And login to https://localhost:8080 using 'admin' and the password.
 
 
 
-### Setup Weather-App
+### Setup Weather-App Infrastructure
 
 To register infrastructure one must create ArgoCD applications. One can do it via UI or declare it like in the following via a declarative kubernetes resource.
 
@@ -215,7 +215,7 @@ spec:
 
 The most important aspects of the configuration are the source and destination properties. The source marks the remote git repository where all infrastructure is declared as IaC. Here we are reusing our existing GitHub repository for it but specifying that ArgoCD should only inspect the `infrastructure` directory of the `exercise-infrastructure-argocd` branch. The destination is the running kubernetes instance. When running locally one can simply use `https://kubernetes.default.svc`.
 
-In the policies section `selfHeal` and `prune` were explicitly specified. That means that local changes to infrastructure (e.g. manually editing the resources by hand) are prohibited and will be automatically reverted. Also, removing a resource configurations in the repository will lead to termination and removal of the corresponding running resource in kubernetes on sync.
+In the policies section `selfHeal` and `prune` were explicitly specified. That means that local changes to infrastructure (e.g. manually editing the resources by hand) are prohibited and will be automatically reverted. Also, removing a resource configurations in the repository will lead to termination and removal of the corresponding running resource in kubernetes on sync.
 
 Creating an ArgoCD application is the only time one must manually apply a configuration in GitOps. After that ArgoCD will be solely responsible for managing the registered infrastructure.
 
@@ -223,9 +223,11 @@ Creating an ArgoCD application is the only time one must manually apply a config
 kubectl apply -f argocd.yaml
 ```
 
-Returning to https://localhost:8080 one should see the new application created.
+Returning to https://localhost:8080 one should see the new application created.
 
 ![image-20230428174226220](.img/image-20230428174226220.png)
+
+The application is now running and one can now view its resource components, logs, events, and assessed health status.
 
 ![image-20230428173404660](.img/image-20230428173404660.png)
 
@@ -234,6 +236,40 @@ Our infrastructure seems not to support ArgoCD's health check feature, however i
 ![image-20230428173339078](.img/image-20230428173339078.png)
 
 
+
+### GitOps Workflow
+
+To test the configured GitOps environment a second backend resource was created & commited/pushed to the remote git repository.
+
+```yaml
+# weather-backend-2-pod.yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  annotations:
+    kompose.cmd: kompose convert
+    kompose.version: 1.26.0 (40646f47)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: weather-backend-2
+  name: weather-backend-2
+spec:
+  containers:
+    - image: weather-backend-image
+      name: weather-backend-2
+      imagePullPolicy: Never
+      resources: {}
+  restartPolicy: OnFailure
+status: {}
+```
+
+Now one can wait on default 3 minutes which is the standard manual pull loop for ArgoCD or just click *REFRESH* in the dashboard to pull changes manually. ArgoCD should realize that there is a new commit and for a short period of time it will state *OutOfSync* and flash yellow. Shortly after that the changes should be applied, ArgoCD once again be in sync and a new pod called `weather-backend-2` should be listed and running.
+
+![image-20230428181844674](.img/image-20230428181844674.png)
+
+Now, as our ArgoCD application has been configured with pruning support, when one deletes the `weather-backend-2-pod.yaml` config and pushes the change to the repository, ArgoCD will terminate and remove the associated running pod `weather-backend-2`.
+
+![image-20230428181929549](.img/image-20230428181929549.png)
 
 
 

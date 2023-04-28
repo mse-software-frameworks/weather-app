@@ -36,16 +36,8 @@ public class Program
         }
 
         var cts = new CancellationTokenSource();
-        
-        // Console.CancelKeyPress += (sender, eventArgs) =>
-        // {
-        //     eventArgs.Cancel = true;
-        //     cts.Cancel();
-        // };
-
         var consumer = new Consumer(kafkaSettings, new MongoDbClient(connectionString));
-        // consumer.Consume(cts.Token);
-        
+
         var tasks = new List<Task>();
         tasks.Add(
             consumer.Consume(cts.Token)

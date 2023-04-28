@@ -81,9 +81,7 @@ public class WeatherAggregator
 
         var topology = streamBuilder.Build();
         var stream = new KafkaStream(topology, config);
-        
-        // cancellationToken.Register(() => { stream.Dispose(); });
-        
+
         await stream.StartAsync(cancellationToken);
     }
 

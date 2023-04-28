@@ -39,15 +39,6 @@ public class Consumer
             .Build();
 
         consumer.Subscribe(_kafkaSettings.TopicName);
-        /*try
-        {
-            consumer.Subscribe(_kafkaSettings.TopicName);
-        }*/
-        /*catch (Exception ex)
-        {
-            Console.WriteLine(ex.Message);
-            Environment.Exit(1);
-        }*/
 
         while (!cancellationToken.IsCancellationRequested)
         {
@@ -61,11 +52,6 @@ public class Consumer
                 Console.WriteLine("Aborting...");
                 return;
             }
-            /*catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-                
-            }*/
         }
     }
 }

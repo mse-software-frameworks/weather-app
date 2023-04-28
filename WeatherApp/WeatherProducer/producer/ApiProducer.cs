@@ -32,10 +32,6 @@ public class ApiProducer
             Url = _config.SchemaRegistry
         };
         using var schemaRegistry = new CachedSchemaRegistryClient(schemaRegistryConfig);
-        // schemaRegistry.RegisterSchemaAsync()
-        // schemaRegistry.RegisterSchemaAsync(new AvroSerializer<AverageWeather>(schemaRegistry))
-        
-        // schemaRegistry.RegisterSchemaAsync("2", new Schema())
 
         var avroSerializerConfig = new AvroSerializerConfig
         {
