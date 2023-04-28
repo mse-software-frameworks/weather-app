@@ -7,16 +7,16 @@ spec:
   project: default
 
   source:
-    repoURL: https://gitlab.com/nanuchi/argocd-app-config.git
-    targetRevision: HEAD
+    repoURL: https://github.com/mse-software-frameworks/weather-app
+    targetRevision: exercise-infrastructure-argocd
     path: infrastructure
-  destination: 
+  destination:
     server: https://kubernetes.default.svc
     namespace: weather-app
 
   syncPolicy:
     syncOptions:
-    - CreateNamespace=true
+      - CreateNamespace=true
 
     automated:
       selfHeal: true
