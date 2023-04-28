@@ -138,9 +138,51 @@ Check if .NET apps write data via dashboard
 
 ## GitOps with Argo
 
-# TODO
+Install ArgoCD
+
+```
+kubectl create namespace argocd
+kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
+```
+
+Change the argocd-server service type to LoadBalancer:
+```
+kubectl patch svc argocd-server -n argocd -p '{"spec": {"type": "LoadBalancer"}}'
+```
+
+Download ArgoCD CLI
+
+eg on Mac
+```
+brew install argocd
+```
+
+or from  https://github.com/argoproj/argo-cd/releases/latest
+
+Forward the port to 8079
+```
+kubectl port-forward svc/argocd-server -n argocd 8080:443
+```
+
+Then get the initial password for the admin-user
+```
+argocd admin initial-password -n argocd
+```
+
+And login to https://localhost:8079 using 'admin' and the password.
+
+Click on create and enter the form.
 
 
+![imginformation](.img/imginformation.png)
+
+for path, choose the path of the deployment yaml
+![imginformation](.img/imgsource.png)
+![imginformation](.img/imgdestination.png)
+
+and click on create. 
+
+The application is now running and you can now view its resource components, logs, events, and assessed health status.
 
 ## Sources
 
