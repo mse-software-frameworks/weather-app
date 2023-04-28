@@ -6,7 +6,7 @@
 
 >  The following steps were tested under Ubuntu on [WSL2](https://learn.microsoft.com/en-us/windows/wsl/about)
 
-Install lightweight Kubernetes distribution k3s
+Install lightweight Kubernetes distribution [k3s](https://docs.k3s.io/installation)
 
 ```bash
 curl -sfL https://get.k3s.io | sh -
@@ -47,13 +47,13 @@ cd infrastructure
 sudo k3s kubectl create -f dashboard.admin-user.yml -f dashboard.admin-user-role.yml
 ```
 
-Obtain the bearer token
+Obtain the bearer token for loign
 
 ```bash
 sudo k3s kubectl -n kubernetes-dashboard create token admin-user
 ```
 
-Create channel
+Create channel to access dashboard
 
 ```bash
 sudo k3s kubectl proxy
@@ -68,7 +68,7 @@ The dashboard is now accessible at:
 
 #### Build Containers for Weather Producer & Weather Backend
 
-To use our .NET apps in our infrastructure we need to containerize them
+To use our .NET apps in orchestrated infrastructure we need to containerize them
 
 ```bash
 cd WeatherApp
@@ -190,6 +190,7 @@ And login to https://localhost:8080 using 'admin' and the password.
 To register infrastructure one must create ArgoCD applications. One can do it via the UI or declare it like in the following via a declarative Kubernetes resource.
 
 ```yaml
+# argocd.yaml
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
@@ -271,6 +272,25 @@ Now, as our ArgoCD application has been configured with pruning support, when on
 
 ![image-20230428181929549](.img/image-20230428181929549.png)
 
+### Questions
+
+#### What happens to "manual" changes (changes, directly on the server) in a fully automated GitOps Setup?
+
+GitOps relies on an immutable infrastructure. Manual changes are lost at the latest when a new commit is published that would trigger synchronisation. The infrastructure always strives to match the Git repository.
+
+In ArgoCD, this can be configured even more strictly. If the `selfHeal` option is enabled, manual changes are immediately discarded and reverted to the last committed version.
+
+#### In which situations is a GitOps approach not a good solutions?
+
+Some examples:
+
+* Splitting CI and CD is not possible/easily managable    
+  For example, one wants to run smoke tests after deployment. This is a CI step but must run after deployment which would be managed by GitOps. Howevery, GitOps has mostly no direct integration with the CI pipeline.
+* Organizations with many releases between environments     
+  Often releases are promoted between environments (eg. QA => Stage => Production). However, GitOps doesn’t provide a solution to propagating changes from one  stage to the next one. In fact it even recommends using only a single environment and avoid stage propagation altogether which is not suitable for every organization.
+* Heavy use of auto-scaling and dynamic resources    
+  GitOps requires the cluster state to match the Git repository after deployment, but dynamic values like replica count and resource limits can cause issues. When the cluster state changes, GitOps tools may try  to sync with the initial value in Git, which may not be desirable.
+
 ---
 
 ## Exercise Backend & Database
@@ -301,3 +321,5 @@ See https://github.com/mse-software-frameworks/weather-app/tree/exercise-setup-k
 * https://argo-cd.readthedocs.io/en/stable/operator-manual/declarative-setup/#applications
 * https://argo-cd.readthedocs.io/en/stable/getting_started/
 * https://www.youtube.com/watch?v=MeU5_k9ssrs
+* https://tech.jumia.com/immutable-infrastructure-gitops/
+* https://codefresh.io/blog/pains-gitops-1-0/
