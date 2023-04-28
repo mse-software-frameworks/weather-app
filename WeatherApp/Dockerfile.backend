@@ -1,0 +1,21 @@
+FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build-env
+WORKDIR /App
+
+# Copy everything
+ADD ./WeatherApp.Backend /App/WeatherApp.Backend
+ADD ./WeatherApp.Kafka.Schemas /App/WeatherApp.Kafka.Schemas
+WORKDIR /App/WeatherApp.Backend
+# Update config files
+RUN sed -i 's/localhost:27017/mongodb:27017/g' ./appsettings.json
+RUN sed -i 's/localhost:29092,localhost:39092,localhost:49092/broker-1:9092,broker-2:9092,broker-3:9092/g' ./appsettings.json
+RUN sed -i 's/localhost:8085/schemaregistry:8085/g' ./appsettings.json
+# Restore as distinct layers
+RUN dotnet restore
+# Build and publish a release
+RUN dotnet publish -c Release -o out
+
+# Build runtime image
+FROM mcr.microsoft.com/dotnet/aspnet:6.0
+WORKDIR /App/WeatherApp.Backend
+COPY --from=build-env /App/WeatherApp.Backend/out .
+ENTRYPOINT ["dotnet", "WeatherApp.Backend.dll"]

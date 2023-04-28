@@ -9,6 +9,12 @@ public class Program
 
     private static void Main(string[] args)
     {
+        Console.WriteLine("Waiting for other containers...");
+        // Helps reducing the amount of restarts needed because backend
+        // crashes until kafka cluster is online
+        Thread.Sleep(25000);
+        Console.WriteLine("Initializing backend");
+        
         var config = new ConfigurationBuilder()
             .AddJsonFile("appsettings.json")
             .Build();
@@ -30,14 +36,37 @@ public class Program
         }
 
         var cts = new CancellationTokenSource();
-        
-        Console.CancelKeyPress += (sender, eventArgs) =>
-        {
-            eventArgs.Cancel = true;
-            cts.Cancel();
-        };
-
         var consumer = new Consumer(kafkaSettings, new MongoDbClient(connectionString));
-        consumer.Consume(cts.Token);
+
+        var tasks = new List<Task>();
+        tasks.Add(
+            consumer.Consume(cts.Token)
+                .ContinueWith(task => cts.Cancel(), cts.Token, TaskContinuationOptions.OnlyOnFaulted, TaskScheduler.Default));
+        
+        tasks.Add(Task.Run(() =>
+        {
+            // Wait for ctrl-c event
+            // https://stackoverflow.com/a/13899429
+            var exitEvent = new ManualResetEvent(false);
+            cts.Token.Register(() => exitEvent.Set());
+            Console.CancelKeyPress += (sender, eventArgs) =>
+            {
+                eventArgs.Cancel = true;
+                exitEvent.Set();
+            };
+            exitEvent.WaitOne();
+            Console.WriteLine("Initiating shutdown...");
+            cts.Cancel();
+        }));
+
+
+        Task.WaitAll(tasks.ToArray());
+
+        cts.Dispose();
+
+        Console.WriteLine("Shutdown complete");
+
+        // It seems that Environment.Exit(1) does not restart container
+        throw new System.AggregateException("Restart!");
     }
 }

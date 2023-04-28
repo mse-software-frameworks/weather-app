@@ -1,0 +1,60 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert
+    kompose.version: 1.26.0 (40646f47)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: kafka-ui
+  name: kafka-ui
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: kafka-ui
+  strategy: {}
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert
+        kompose.version: 1.26.0 (40646f47)
+      creationTimestamp: null
+      labels:
+        io.kompose.service: kafka-ui
+    spec:
+      containers:
+        - env:
+            - name: DYNAMIC_CONFIG_ENABLED
+              value: "true"
+            - name: KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS
+              value: broker-1:9092
+            - name: KAFKA_CLUSTERS_0_METRICS_PORT
+              value: "9997"
+            - name: KAFKA_CLUSTERS_0_NAME
+              value: broker-1
+            - name: KAFKA_CLUSTERS_0_SCHEMAREGISTRY
+              value: http://schemaregistry:8085
+            - name: KAFKA_CLUSTERS_1_BOOTSTRAPSERVERS
+              value: broker-2:9092
+            - name: KAFKA_CLUSTERS_1_METRICS_PORT
+              value: "9997"
+            - name: KAFKA_CLUSTERS_1_NAME
+              value: broker-2
+            - name: KAFKA_CLUSTERS_1_SCHEMAREGISTRY
+              value: http://schemaregistry:8085
+            - name: KAFKA_CLUSTERS_2_BOOTSTRAPSERVERS
+              value: broker-3:9092
+            - name: KAFKA_CLUSTERS_2_METRICS_PORT
+              value: "9997"
+            - name: KAFKA_CLUSTERS_2_NAME
+              value: broker-3
+            - name: KAFKA_CLUSTERS_2_SCHEMAREGISTRY
+              value: http://schemaregistry:8085
+          image: provectuslabs/kafka-ui:latest
+          name: kafka-ui
+          ports:
+            - containerPort: 8080
+          resources: {}
+      restartPolicy: Always
+status: {}

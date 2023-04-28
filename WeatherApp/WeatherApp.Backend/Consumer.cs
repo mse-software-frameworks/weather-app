@@ -19,7 +19,7 @@ public class Consumer
         _dbClient = dbClient;
     }
 
-    public void Consume(CancellationToken cancellationToken)
+    public async Task Consume(CancellationToken cancellationToken)
     {
         var schemaRegistryConfig = new SchemaRegistryConfig()
         {

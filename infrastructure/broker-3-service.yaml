@@ -1,0 +1,26 @@
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    kompose.cmd: kompose convert
+    kompose.version: 1.26.0 (40646f47)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: broker-3
+  name: broker-3
+spec:
+  ports:
+    - name: "49092"
+      port: 49092
+      targetPort: 49092
+    - name: "9092"
+      port: 9092
+      targetPort: 9092
+    - name: "9997"
+      port: 9997
+      targetPort: 9997
+      
+  selector:
+    io.kompose.service: broker-3
+status:
+  loadBalancer: {}

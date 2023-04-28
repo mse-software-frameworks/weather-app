@@ -135,8 +135,20 @@ services:
       MONGO_INITDB_ROOT_USERNAME: root
       MONGO_INITDB_ROOT_PASSWORD: root
     ports:
-      - 27017:27017
-    volumes:
-      - type: bind
-        source: ./WeatherApp.Backend/data
-        target: /data/db
+      - "27017:27017"
+#    volumes:
+#      - type: bind
+#        source: ../WeatherApp/WeatherApp.Backend/data
+#        target: /data/db
+        
+# -------------------- .NET Apps -------------------
+
+  weather-producer:
+    image: weather-producer-image
+    container_name: weather-producer
+    restart: on-failure
+    
+  weather-backend:
+    image: weather-backend-image
+    container_name: weather-backend
+    restart: on-failure
